@@ -101,8 +101,10 @@
   // ---------- Generate 3D City Blocks ----------
   const cityContainer = $('gl-3d-city');
   const gridSize = 5; 
-  const blockSpacing = 28; 
-  const offset = (gridSize * blockSpacing) / 2;
+  const blockSpacing = 24; 
+  
+  // Calculate the offset to perfectly center the 5x5 grid around (0,0)
+  const offset = ((gridSize - 1) * blockSpacing) / 2;
 
   for(let x=0; x<gridSize; x++) {
     for(let y=0; y<gridSize; y++) {
@@ -110,20 +112,20 @@
       block.className = 'gl-3d-block';
       
       // Randomize height
-      const h = Math.random() * 50 + 10;
+      const h = Math.random() * 40 + 15;
       block.style.setProperty('--h', `${h}px`);
       
-      // Center the grid
+      // Center the grid mathematically
       const posX = (x * blockSpacing) - offset;
       const posY = (y * blockSpacing) - offset;
       
       block.style.left = `${posX}px`;
       block.style.top = `${posY}px`;
       
-      // Make the center building a distinct, glowing "landmark"
+      // Center building is a tall landmark
       if(x === 2 && y === 2) {
           block.classList.add('highlight');
-          block.style.setProperty('--h', `80px`); // Taller landmark
+          block.style.setProperty('--h', `70px`);
       } else if(Math.random() > 0.6) {
           block.classList.add('highlight');
       }
