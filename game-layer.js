@@ -76,14 +76,18 @@
       if(++f<90) requestAnimationFrame(tick); else x.clearRect(0,0,c.width,c.height); })();
   }
 
-  // ---------- Dark game map + keys ----------
+  // ---------- Map setup + keys ----------
   window.addEventListener('load', () => setTimeout(() => {
     if(!window.map) return;
+    // Keep the standard OpenStreetMap tiles (free, no API key required)
     map.eachLayer(l => { if(l instanceof L.TileLayer) map.removeLayer(l); });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-      {subdomains:'abcd', maxZoom:19, attribution:'© OpenStreetMap © CARTO'}).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19, 
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
     refreshHud();
   }, 400));
+  
   function toggleMute(){ muted=!muted; $('hud-mute').textContent = muted?'🔇':'🔊'; }
   $('hud-mute').onclick = toggleMute;
   document.addEventListener('keydown', e => {
