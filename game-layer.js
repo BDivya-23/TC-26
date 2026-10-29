@@ -87,7 +87,7 @@
   }
   setTimeout(typeWriter, 400);
 
-  // ---------- Generate Glowing Nodes ----------
+  // ---------- Generate Glowing Background Nodes ----------
   const nodesContainer = $('gl-nodes');
   for(let i=0; i<15; i++) {
     const node = document.createElement('div');
@@ -99,22 +99,47 @@
     nodesContainer.appendChild(node);
   }
 
-  // ---------- Generate 3D City Blocks ----------
+  // ---------- Generate 3D City Blocks (Structured Grid) ----------
   const cityContainer = $('gl-3d-city');
-  for(let i=0; i<24; i++) {
-    const block = document.createElement('div');
-    block.className = 'gl-3d-block';
-    // Randomize height to look like a skyline
-    const h = Math.random() * 40 + 10;
-    block.style.setProperty('--h', `${h}px`);
-    // Position blocks randomly in a grid
-    const x = Math.floor(Math.random() * 10) * 24 - 120;
-    const y = Math.floor(Math.random() * 10) * 24 - 120; 
-    block.style.left = `${x}px`;
-    block.style.top = `${y}px`;
-    // Randomize animation delay for a futuristic pulsing effect
-    block.style.animationDelay = `${Math.random() * 2}s`;
-    cityContainer.appendChild(block);
+  const gridSize = 5; 
+  const blockSpacing = 24; 
+  const offset = (gridSize * blockSpacing) / 2;
+
+  for(let x=0; x<gridSize; x++) {
+    for(let y=0; y<gridSize; y++) {
+      // Leave the center empty to frame the text
+      if(x === 2 && y === 2) continue;
+
+      const block = document.createElement('div');
+      block.className = 'gl-3d-block';
+      
+      // Randomize height to look like a skyline
+      const h = Math.random() * 40 + 15;
+      block.style.setProperty('--h', `${h}px`);
+      
+      // Calculate grid position (centered)
+      const posX = (x * blockSpacing) - offset;
+      const posY = (y * blockSpacing) - offset;
+      
+      block.style.left = `${posX}px`;
+      block.style.top = `${posY}px`;
+      
+      // Make some buildings glow brighter than others
+      if(Math.random() > 0.7) {
+          block.classList.add('highlight');
+      }
+      
+      block.style.animationDelay = `${Math.random() * 2}s`;
+      cityContainer.appendChild(block);
+    }
+  }
+
+  // Add floating data nodes to the 3D city
+  for(let i=0; i<3; i++) {
+    const dataNode = document.createElement('div');
+    dataNode.className = 'gl-data-node';
+    dataNode.style.animationDelay = `${i * 2}s`;
+    cityContainer.appendChild(dataNode);
   }
 
   // ---------- Toggles ----------
@@ -152,6 +177,8 @@
     $('hud-rank').textContent = rank(solved);
     if(solved > prevSolved){ toast('ZONE CLEARED! +100'); sfx.win(); confetti(); }
     prevSolved = solved;
+    
+    // Lose state: not enough money for the cheapest fix (₹15 Cr)
     if(!over && solved < TOTAL && cityState.budget < 15){
       over = true; setTimeout(()=>{ sfx.lose(); $('gl-over').style.display='flex'; }, 1200);
     }
