@@ -1,0 +1,37 @@
+/* TwinCity avatar creator: add AFTER game-layer.css */
+#gl-avatar{overflow-y:auto;justify-content:flex-start;z-index:5100}
+.av-wrap{position:relative;z-index:2;display:flex;gap:28px;align-items:center;width:min(980px,94vw);margin:auto;padding:20px 0}
+.av-stage{width:300px;flex-shrink:0;display:flex;flex-direction:column;align-items:center}
+.av-stage h2{margin:0 0 10px;font-size:20px;letter-spacing:4px;color:var(--neon);text-shadow:0 0 14px var(--neon)}
+.av-ped{position:relative;width:240px;height:290px;display:flex;align-items:flex-end;justify-content:center}
+.av-ped::after{content:"";position:absolute;bottom:-6px;left:10%;width:80%;height:26px;border-radius:50%;
+ background:radial-gradient(ellipse,rgba(34,211,238,.7),transparent 70%);box-shadow:0 0 30px rgba(168,85,247,.5)}
+#av-prev{width:100%;animation:avBob 3s ease-in-out infinite}
+#av-prev svg{width:100%;height:auto;display:block;filter:drop-shadow(0 8px 18px rgba(0,0,0,.6))}
+#av-pet{position:absolute;right:-18px;top:30px;font-size:44px;z-index:3;animation:avBob 2s ease-in-out infinite reverse}
+@keyframes avBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#av-name{margin-top:18px;width:220px;text-align:center;padding:10px;border-radius:12px;background:rgba(15,23,42,.85);
+ border:1px solid var(--neon);color:#fff;font-family:'Orbitron',sans-serif;letter-spacing:3px;outline:none}
+#av-name:focus{box-shadow:0 0 16px var(--neon)}
+#av-title{margin-top:8px;font-size:12px;letter-spacing:3px;color:var(--gold);text-shadow:0 0 8px var(--gold)}
+.av-panel{flex:1;min-width:0;padding:18px;border-radius:16px;background:rgba(15,23,42,.85);backdrop-filter:blur(12px);
+ border:1px solid rgba(34,211,238,.3);box-shadow:inset 0 0 20px rgba(34,211,238,.1),0 8px 32px rgba(0,0,0,.6)}
+.av-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.av-tab{background:transparent;border:1px solid rgba(255,255,255,.2);color:#94a3b8;padding:7px 12px;border-radius:20px;
+ font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.av-tab:hover{color:#fff;border-color:var(--neon)}
+.av-tab.on{background:var(--neon);color:#000;border-color:var(--neon);box-shadow:0 0 14px var(--neon)}
+.av-sw{grid-column:1/-1;display:flex;gap:10px}
+.av-sw button{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.3);cursor:pointer}
+.av-sw button.on{border-color:#fff;box-shadow:0 0 12px var(--neon);transform:scale(1.15)}
+.av-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;max-height:46vh;overflow-y:auto;padding:4px}
+.av-opt{background:rgba(5,9,20,.7);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:6px;color:#94a3b8;
+ font-family:'Orbitron',sans-serif;font-size:10px;cursor:pointer;transition:all .15s}
+.av-opt:hover{transform:translateY(-2px);border-color:var(--neon2)}
+.av-opt.on{border-color:var(--neon);color:#fff;box-shadow:0 0 14px var(--neon)}
+.av-opt svg{width:100%;height:90px;display:block}
+.av-opt small{display:block;margin-top:4px}
+.av-em{display:block;font-size:40px;line-height:90px}
+.av-actions{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:16px}
+.av-actions .gl-btn{font-size:16px;padding:12px 32px}
+@media(max-width:760px){.av-wrap{flex-direction:column}.av-stage{width:100%}.av-actions{justify-content:center}}
