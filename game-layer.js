@@ -19,29 +19,100 @@
     lose:()=>[400,300,200,120].forEach((f,i)=>beep(f,.3,'sawtooth',.08,i*.15))
   };
 
-  // ---------- Screens ----------
+  // ---------- Screens & HTML Injection ----------
   document.body.insertAdjacentHTML('beforeend', `
+   <!-- START SCREEN -->
    <div id="gl-start" class="gl-screen">
-     <h1>TWINCITY</h1><p>DIGITAL CHENNAI · MAYOR SIMULATOR</p>
-     <p style="max-width:520px;font-size:13px">Chennai is flooding and gridlocked. You have ₹250 Cr.
-        Fix all 10 zones before the money runs out.</p>
-     <div class="keys"><span>🖱️ Click a zone</span><span>⌨️ Type a fix</span><span>✅ Approve to build</span>
-        <span>F Fullscreen</span><span>M Mute</span></div>
-     <button class="gl-btn" id="gl-play">▶ PLAY</button></div>
-   <div id="gl-over" class="gl-screen" style="display:none"><h1>GAME OVER</h1>
+     <!-- Background Grid & Nodes -->
+     <div class="gl-grid"></div>
+     <div class="gl-nodes" id="gl-nodes"></div>
+     
+     <!-- Main Content -->
+     <div class="gl-content">
+       <h1>TWINCITY</h1>
+       <p class="gl-type" id="gl-typewriter"></p>
+       
+       <!-- Briefing Panel -->
+       <div class="gl-briefing">
+         <p>Chennai is flooding and gridlocked. You have <strong>₹250 Cr</strong>.<br>Fix all 10 zones before the money runs out.</p>
+       </div>
+
+       <!-- Controls -->
+       <div class="gl-controls">
+         <button class="gl-btn" id="gl-play">▶ START MISSION</button>
+         <div class="gl-toggles">
+           <button class="gl-toggle" id="gl-toggle-fs">⛶ Fullscreen</button>
+           <button class="gl-toggle" id="gl-toggle-mute">🔊 Sound On</button>
+         </div>
+       </div>
+     </div>
+   </div>
+
+   <!-- GAME OVER SCREEN -->
+   <div id="gl-over" class="gl-screen" style="display:none">
+     <h1>GAME OVER</h1>
      <p>The treasury is empty. Chennai is still stuck.</p>
-     <button class="gl-btn" onclick="resetGame()">↻ TRY AGAIN</button></div>
-   <div id="hud"><div class="cell"><small>SCORE</small><b id="hud-score">0</b></div>
+     <button class="gl-btn" onclick="resetGame()">↻ TRY AGAIN</button>
+   </div>
+
+   <!-- HUD -->
+   <div id="hud">
+     <div class="cell"><small>SCORE</small><b id="hud-score">0</b></div>
      <div class="cell"><small>ZONES</small><b id="hud-zones">0/${TOTAL}</b></div>
      <div class="cell"><small>RANK</small><b id="hud-rank" style="font-size:13px">ROOKIE</b></div>
-     <button id="hud-mute" title="Mute (M)">🔊</button></div>
+   </div>
+   
    <div id="gl-toast"></div><canvas id="gl-confetti"></canvas>`);
+
   const $ = id => document.getElementById(id);
   $('hud').style.display='none';
 
+  // ---------- Typewriter Effect ----------
+  const typeText = "DIGITAL CHENNAI · MAYOR SIMULATOR";
+  let typeIndex = 0;
+  function typeWriter() {
+    if (typeIndex < typeText.length) {
+      $('gl-typewriter').innerHTML += typeText.charAt(typeIndex);
+      typeIndex++;
+      setTimeout(typeWriter, 50);
+    }
+  }
+  setTimeout(typeWriter, 400);
+
+  // ---------- Generate Glowing Nodes ----------
+  const nodesContainer = $('gl-nodes');
+  for(let i=0; i<15; i++) {
+    const node = document.createElement('div');
+    node.className = 'gl-node';
+    node.style.left = `${Math.random() * 80 + 10}%`;
+    node.style.top = `${Math.random() * 80 + 10}%`;
+    node.style.animationDelay = `${Math.random() * 2}s`;
+    node.style.animationDuration = `${1.5 + Math.random() * 2}s`;
+    nodesContainer.appendChild(node);
+  }
+
+  // ---------- Toggles ----------
+  $('gl-toggle-fs').onclick = () => {
+    if(document.fullscreenElement) {
+      document.exitFullscreen();
+      $('gl-toggle-fs').innerText = "⛶ Fullscreen";
+    } else {
+      document.documentElement.requestFullscreen();
+      $('gl-toggle-fs').innerText = "⛶ Exit Fullscreen";
+    }
+  };
+
+  $('gl-toggle-mute').onclick = () => {
+    muted = !muted;
+    $('gl-toggle-mute').innerText = muted ? "🔇 Sound Off" : "🔊 Sound On";
+  };
+
+  // ---------- Start Game ----------
   $('gl-play').onclick = () => {
-    started = true; sfx.start();
-    $('gl-start').style.display='none'; $('hud').style.display='flex';
+    started = true; 
+    sfx.start();
+    $('gl-start').style.display='none'; 
+    $('hud').style.display='flex';
     document.documentElement.requestFullscreen?.().catch(()=>{});
     setTimeout(()=>map && map.invalidateSize(), 300);
   };
@@ -55,13 +126,14 @@
     $('hud-rank').textContent = rank(solved);
     if(solved > prevSolved){ toast('ZONE CLEARED! +100'); sfx.win(); confetti(); }
     prevSolved = solved;
-    // lose state: not enough money for the cheapest fix (₹15 Cr)
     if(!over && solved < TOTAL && cityState.budget < 15){
       over = true; setTimeout(()=>{ sfx.lose(); $('gl-over').style.display='flex'; }, 1200);
     }
   }
+  
   const _ud = window.updateDashboard;
   window.updateDashboard = function(){ _ud.apply(this, arguments); refreshHud(); };
+  
   const _sa = window.selectArea;
   window.selectArea = function(){ sfx.click(); return _sa.apply(this, arguments); };
 
@@ -76,10 +148,9 @@
       if(++f<90) requestAnimationFrame(tick); else x.clearRect(0,0,c.width,c.height); })();
   }
 
-  // ---------- Map setup + keys ----------
+  // ---------- Map Setup ----------
   window.addEventListener('load', () => setTimeout(() => {
     if(!window.map) return;
-    // Keep the standard OpenStreetMap tiles (free, no API key required)
     map.eachLayer(l => { if(l instanceof L.TileLayer) map.removeLayer(l); });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19, 
@@ -87,14 +158,12 @@
     }).addTo(map);
     refreshHud();
   }, 400));
-  
-  function toggleMute(){ muted=!muted; $('hud-mute').textContent = muted?'🔇':'🔊'; }
-  $('hud-mute').onclick = toggleMute;
+
   document.addEventListener('keydown', e => {
     if(/TEXTAREA|INPUT/.test(e.target.tagName)) return;
     if(e.key==='Enter' && !started) $('gl-play').click();
-    if(e.key.toLowerCase()==='m') toggleMute();
-    if(e.key.toLowerCase()==='f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+    if(e.key.toLowerCase()==='m') $('gl-toggle-mute').click();
+    if(e.key.toLowerCase()==='f') $('gl-toggle-fs').click();
     if(e.key==='Escape') stopExploration();
   });
 })();
