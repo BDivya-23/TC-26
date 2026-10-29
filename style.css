@@ -516,3 +516,43 @@ button.action:disabled { background: #475569; cursor: not-allowed; }
     #pulse-row { grid-template-columns: repeat(2, 1fr); }
     #budget-section { flex-direction: column; align-items: center; }
 }
+/* =============================================================
+   MAP TRANSFORMATIONS (DIGITAL TWIN)
+   ============================================================= */
+
+/* Custom tooltip styling for map elements */
+.map-tooltip {
+    background: rgba(15, 23, 42, 0.9) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
+    font-weight: bold !important;
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+}
+.map-tooltip::before {
+    display: none !important; /* Hide the default tooltip arrow */
+}
+
+/* Animated dashed line for the Metro */
+.metro-line-anim {
+    animation: dash-scroll 20s linear infinite;
+    filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.8));
+}
+
+@keyframes dash-scroll {
+    to {
+        stroke-dashoffset: -1000;
+    }
+}
+
+/* Fade in animation for the new Park */
+.park-fade-in {
+    animation: park-pulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes park-pulse {
+    0% { fill-opacity: 0.3; }
+    100% { fill-opacity: 0.6; }
+}
