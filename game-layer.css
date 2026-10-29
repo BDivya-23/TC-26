@@ -58,7 +58,7 @@
 }
 
 /* =========================================
-   3D DIGITAL TWIN CITY 
+   3D DIGITAL TWIN CITY (SCALED & CENTERED)
    ========================================= */
 .gl-3d-scene {
     position: absolute; 
@@ -84,6 +84,7 @@
     transform-style: preserve-3d;
     transform: rotateX(60deg) rotateZ(45deg); 
     animation: cityRotate 30s linear infinite;
+    
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(5, 1fr);
@@ -205,7 +206,7 @@
 .gl-briefing {
     margin: 30px 0;
     padding: 20px 30px;
-    background: rgba(15, 23, 42, 0.85); /* Made slightly darker to hide the 3D blocks behind it */
+    background: rgba(15, 23, 42, 0.85); 
     backdrop-filter: blur(12px);
     border: 1px solid rgba(34, 211, 238, 0.3);
     border-radius: 12px;
