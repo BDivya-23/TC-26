@@ -13,19 +13,19 @@
         <div class="badge">AI-Powered Digital Twin</div>
     </header>
 
+    <!-- FULL WIDTH LIVE ALERT BANNER -->
+    <div class="news-ticker" id="top-ticker">
+        <div class="ticker-text">
+            🚨 Breaking: Heavy waterlogging reported in Velachery. Traffic at a standstill in Porur. Mayor's approval rating at 85%. We need action!
+        </div>
+    </div>
+
     <div id="map"></div>
     <div id="rain-overlay"></div>
 
     <div id="dashboard">
         <h1>🏛️ Mayor Dashboard</h1>
         
-        <!-- Scrolling News Ticker -->
-        <div class="news-ticker">
-            <div class="ticker-text">
-                🚨 Breaking: Heavy waterlogging reported in Velachery. Traffic at a standstill in Porur. Mayor's approval rating at 85%. We need action!
-            </div>
-        </div>
-
         <h2>City Status</h2>
         
         <!-- BUDGET DONUT -->
@@ -41,7 +41,7 @@
                             style="transition: stroke-dasharray 0.6s ease;"/>
                 </svg>
                 <div id="donut-center">
-                    <div id="donut-amount">₹100</div>
+                    <div id="donut-amount">₹250</div>
                     <div id="donut-sub">Cr left</div>
                 </div>
             </div>
@@ -49,14 +49,14 @@
                 <div class="legend-row">
                     <span class="legend-dot" style="background:#10b981;"></span>
                     <span>Remaining</span>
-                    <strong id="legend-remaining">₹100 Cr</strong>
+                    <strong id="legend-remaining">₹250 Cr</strong>
                 </div>
                 <div class="legend-row">
                     <span class="legend-dot" style="background:#ef4444;"></span>
                     <span>Spent</span>
                     <strong id="legend-spent">₹0 Cr</strong>
                 </div>
-                <span id="budget" style="display:none;">₹100 Cr</span>
+                <span id="budget" style="display:none;">₹250 Cr</span>
                 <div id="budget-bar" style="display:none;"></div>
             </div>
         </div>
@@ -64,17 +64,17 @@
         <!-- ANIMATED APPROVAL METER -->
         <div id="approval-section">
             <div id="approval-header">
-                <div id="approval-emoji">🙂</div>
+                <div id="approval-emoji">😐</div>
                 <div id="approval-text">
                     <div class="approval-title">Citizen Approval</div>
                     <div id="approval-percent-line">
-                        <span id="happiness">85%</span>
-                        <span id="star-rating">⭐⭐⭐⭐☆</span>
+                        <span id="happiness">65%</span>
+                        <span id="star-rating">⭐⭐⭐☆☆</span>
                     </div>
                 </div>
             </div>
             <div class="approval-track">
-                <div id="happiness-bar" class="approval-fill" style="width:85%;"></div>
+                <div id="happiness-bar" class="approval-fill" style="width:65%;"></div>
             </div>
         </div>
 
@@ -150,7 +150,6 @@
     <!-- FULL SCREEN STREET VIEW (STREETQUEST) -->
     <div id="street-view-container">
         <div id="street-view-bg"></div>
-        
         <div class="hotspot" onclick="discoverProblem('Porur')" style="top: 60%; left: 30%;">
             <div class="ping"></div>
             <div class="hotspot-label">🚧 Pothole Detected</div>
@@ -163,8 +162,7 @@
             <div class="ping"></div>
             <div class="hotspot-label">🚦 Traffic Jam</div>
         </div>
-
-        <button class="action" style="position: absolute; top: 80px; right: 30px; width: auto; background: #ef4444; z-index: 10000; padding: 10px 20px; font-size: 16px;" onclick="stopExploration()">🛑 Exit Street View</button>
+        <button class="action" style="position: absolute; top: 110px; right: 30px; width: auto; background: #ef4444; z-index: 10000; padding: 10px 20px; font-size: 16px;" onclick="stopExploration()">🛑 Exit Street View</button>
     </div>
 
     <!-- VICTORY SCREEN -->
