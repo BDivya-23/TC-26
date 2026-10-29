@@ -1,6 +1,6 @@
 // === STATE ===
 const cityState = {
-    budget: 250, happiness: 65, selectedArea: null, // Increased budget to accommodate 10 areas
+    budget: 250, happiness: 65, selectedArea: null,
     areas: {
         Velachery:  { flood: 80, traffic: 60, solved: false },
         Vadapalani: { flood: 35, traffic: 75, solved: false },
@@ -276,7 +276,7 @@ function updateDashboard() {
 
 function renderDonut() {
     const remaining = cityState.budget;
-    const total = 250; // Updated to match new total budget
+    const total = 250; 
     const spent = Math.max(0, total - remaining);
     const circumference = 2 * Math.PI * 50;
 
@@ -493,7 +493,7 @@ function simulateWhatIf(type) {
 }
 
 function initMap() {
-    map = L.map('map', { dragging: true, zoomControl: true }).setView([13.0500, 80.2100], 11); // Slightly zoomed out start
+    map = L.map('map', { dragging: true, zoomControl: true }).setView([13.0500, 80.2100], 11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
     
     locations.forEach(loc => {
