@@ -242,58 +242,61 @@ if (typeof window.mayorDays === 'undefined') {
 /* =============================================================
    FEATURE 1: PULSE ROW
    ============================================================= */
-function renderPulse() {
-    const areas = Object.values(cityState.areas);
+/* =============================================================
+   FEATURE 2: PER-AREA MINI-CARDS
+   ============================================================= */
+function renderAreaCards() {
+    const container = document.getElementById('area-cards-container');
+    if (!container) return;
 
-    // City Health: 100 - avg(flood + traffic)/2 across unsolved areas
-    const unsolved = areas.filter(a => !a.solved);
-    let health;
-    if (unsolved.length === 0) {
-        health = 100;
-    } else {
-        const avg = unsolved.reduce((s, a) => s + (a.flood + a.traffic) / 2, 0) / unsolved.length;
-        health = Math.max(0, Math.round(100 - avg));
-    }
+    const names = Object.keys(cityState.areas);
 
-    // Active crises
-    const crises = unsolved.length;
+    container.innerHTML = names.map(name => {
+        const a = cityState.areas[name];
+        const isSelected = cityState.selectedArea === name;
 
-    // Citizens affected
-    const affected = Object.keys(cityState.areas).reduce((sum, name) => {
-        return cityState.areas[name].solved ? sum : sum + (AREA_POPULATION[name] || 200000);
-    }, 0);
+        // If the area is solved, force the visual stats to 0
+        const displayFlood = a.solved ? 0 : a.flood;
+        const displayTraffic = a.solved ? 0 : a.traffic;
 
-    // Days
-    const days = window.mayorDays;
+        let cls = 'area-card';
+        if (isSelected) cls += ' selected';
+        if (a.solved)   cls += ' solved';
+        if (!a.solved && !isSelected) cls += ' pick-hint';
 
-    // Write values
-    const healthEl = document.getElementById('pulse-health');
-    const crisesEl = document.getElementById('pulse-crises');
-    const citizensEl = document.getElementById('pulse-citizens');
-    const daysEl = document.getElementById('pulse-days');
+        let tag = '';
+        if (a.solved) {
+            tag = `<span class="area-solved-tag">✅ Solved</span>`;
+        } else if (isSelected) {
+            tag = `<span class="area-solved-tag">Selected</span>`;
+        }
 
-    if (healthEl) healthEl.textContent = health + '%';
-    if (crisesEl) crisesEl.textContent = crises;
-    if (citizensEl) citizensEl.textContent = formatCompact(affected);
-    if (daysEl) daysEl.textContent = days;
-
-    // Colorize health tile
-    const healthTile = document.getElementById('pulse-health-tile');
-    if (healthTile) {
-        healthTile.classList.remove('health-good', 'health-mid', 'health-bad');
-        if (health >= 70) healthTile.classList.add('health-good');
-        else if (health >= 40) healthTile.classList.add('health-mid');
-        else healthTile.classList.add('health-bad');
-    }
-
-    // Colorize crises tile
-    const crisesTile = document.getElementById('pulse-crises-tile');
-    if (crisesTile) {
-        crisesTile.classList.remove('health-good', 'health-mid', 'health-bad');
-        if (crises === 0) crisesTile.classList.add('health-good');
-        else if (crises === 1) crisesTile.classList.add('health-mid');
-        else crisesTile.classList.add('health-bad');
-    }
+        return `
+            <div class="${cls}" data-area="${name}" onclick="handleAreaCardClick('${name}')">
+                <div class="area-card-header">
+                    <span class="area-status-dot"></span>
+                    <span class="area-name">${name}</span>
+                    ${tag}
+                </div>
+                <div class="area-stat-row">
+                    <span class="stat-emoji">🌊</span>
+                    <span class="stat-name">Flood</span>
+                    <div class="area-stat-bar flood">
+                        <div style="width:${displayFlood}%;"></div>
+                    </div>
+                    <span class="area-stat-val">${displayFlood}</span>
+                </div>
+                <div class="area-stat-row">
+                    <span class="stat-emoji">🚗</span>
+                    <span class="stat-name">Traffic</span>
+                    <div class="area-stat-bar traffic">
+                        <div style="width:${displayTraffic}%;"></div>
+                    </div>
+                    <span class="area-stat-val">${displayTraffic}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 function formatCompact(n) {
