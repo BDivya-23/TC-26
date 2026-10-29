@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>TwinCity: Digital Chennai</title>
-    
-    <!-- 1. Load the Leaflet Map Library -->
+
+    <!-- 1. Leaflet Map Library -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
+
     <!-- 2. Your Styles -->
     <link rel="stylesheet" href="style.css">
 </head>
@@ -18,43 +18,140 @@
     </header>
 
     <div id="main-layout">
-        <!-- THIS IS THE INTERACTIVE MAP -->
+        <!-- INTERACTIVE MAP (untouched) -->
         <div id="map"></div>
 
         <div id="dashboard">
             <h1>🏛️ Mayor Dashboard</h1>
-            
+
+            <!-- ============================================================ -->
+            <!-- FEATURE 1: LIVE CHENNAI PULSE                                -->
+            <!-- ============================================================ -->
+            <div id="pulse-row">
+                <div class="pulse-tile" id="pulse-health-tile">
+                    <div class="pulse-icon">🏙️</div>
+                    <div class="pulse-label">City Health</div>
+                    <div class="pulse-value" id="pulse-health">--</div>
+                </div>
+                <div class="pulse-tile" id="pulse-crises-tile">
+                    <div class="pulse-icon">🚨</div>
+                    <div class="pulse-label">Active Crises</div>
+                    <div class="pulse-value" id="pulse-crises">--</div>
+                </div>
+                <div class="pulse-tile" id="pulse-citizens-tile">
+                    <div class="pulse-icon">👥</div>
+                    <div class="pulse-label">Citizens Affected</div>
+                    <div class="pulse-value" id="pulse-citizens">--</div>
+                </div>
+                <div class="pulse-tile" id="pulse-days-tile">
+                    <div class="pulse-icon">⏱️</div>
+                    <div class="pulse-label">Days as Mayor</div>
+                    <div class="pulse-value" id="pulse-days">1</div>
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- CITY STATUS: BUDGET DONUT + APPROVAL METER                   -->
+            <!-- ============================================================ -->
             <h2>City Status</h2>
-            <div class="stat">
-                <span>💰 Budget</span>
-                <span id="budget">₹100 Cr</span>
-            </div>
-            <div style="background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; margin-bottom: 15px; overflow: hidden;">
-                <div id="budget-bar" style="background: #10b981; height: 100%; width: 100%; transition: width 0.5s ease;"></div>
+
+            <!-- FEATURE 3: BUDGET DONUT -->
+            <div id="budget-section">
+                <div id="budget-donut-wrap">
+                    <svg id="budget-donut" viewBox="0 0 120 120" width="120" height="120">
+                        <!-- Background ring -->
+                        <circle cx="60" cy="60" r="50" fill="none"
+                                stroke="rgba(255,255,255,0.08)" stroke-width="12"/>
+                        <!-- Spent segment (red) -->
+                        <circle id="donut-spent" cx="60" cy="60" r="50" fill="none"
+                                stroke="#ef4444" stroke-width="12"
+                                stroke-dasharray="0 314.16"
+                                stroke-linecap="round"
+                                transform="rotate(-90 60 60)"
+                                style="transition: stroke-dasharray 0.6s ease;"/>
+                        <!-- Remaining segment (green) -->
+                        <circle id="donut-remaining" cx="60" cy="60" r="50" fill="none"
+                                stroke="#10b981" stroke-width="12"
+                                stroke-dasharray="314.16 314.16"
+                                stroke-linecap="round"
+                                transform="rotate(-90 60 60)"
+                                style="transition: stroke-dasharray 0.6s ease;"/>
+                    </svg>
+                    <div id="donut-center">
+                        <div id="donut-amount">₹100</div>
+                        <div id="donut-sub">Cr left</div>
+                    </div>
+                </div>
+                <div id="budget-legend">
+                    <div class="legend-row">
+                        <span class="legend-dot" style="background:#10b981;"></span>
+                        <span>Remaining</span>
+                        <strong id="legend-remaining">₹100 Cr</strong>
+                    </div>
+                    <div class="legend-row">
+                        <span class="legend-dot" style="background:#ef4444;"></span>
+                        <span>Spent</span>
+                        <strong id="legend-spent">₹0 Cr</strong>
+                    </div>
+                    <!-- Hidden spans keep old app.js working -->
+                    <span id="budget" style="display:none;">₹100 Cr</span>
+                    <div id="budget-bar" style="display:none;"></div>
+                </div>
             </div>
 
-            <div class="stat">
-                <span>😊 Citizen Happiness</span>
-                <span id="happiness">85%</span>
-            </div>
-            <div style="background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; overflow: hidden;">
-                <div id="happiness-bar" style="background: #3b82f6; height: 100%; width: 85%; transition: width 0.5s ease;"></div>
+            <!-- FEATURE 4: ANIMATED CITIZEN APPROVAL METER -->
+            <div id="approval-section">
+                <div id="approval-header">
+                    <div id="approval-emoji">🙂</div>
+                    <div id="approval-text">
+                        <div class="approval-title">Citizen Approval</div>
+                        <div id="approval-percent-line">
+                            <span id="happiness">85%</span>
+                            <span id="star-rating">⭐⭐⭐⭐☆</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="approval-track">
+                    <div id="happiness-bar" class="approval-fill" style="width:85%;"></div>
+                </div>
             </div>
 
-            <h2>Selected Area</h2>
-            <div id="problem-panel">Click a location on the map to begin.</div>
-            
+            <!-- ============================================================ -->
+            <!-- FEATURE 2: PER-AREA MINI-CARDS                               -->
+            <!-- ============================================================ -->
+            <h2>City Zones</h2>
+            <div id="area-cards-container">
+                <!-- Cards injected by JS via renderAreaCards() -->
+            </div>
+
+            <!-- Keep old problem-panel id hidden for backward compat -->
+            <div id="problem-panel" style="display:none;">Click a location on the map to begin.</div>
+
+            <!-- WHAT IF SIMULATOR (unchanged) -->
             <h2>What If? Simulator</h2>
             <div style="display:flex; gap:10px; margin-bottom: 10px;">
                 <button class="action" style="margin-top:0; background: #3b82f6; color: white !important; font-size: 14px;" onclick="simulateWhatIf('metro')">🚇 Build Metro</button>
                 <button class="action" style="margin-top:0; background: #10b981; color: white !important; font-size: 14px;" onclick="simulateWhatIf('drainage')">🌊 Fix Drainage</button>
             </div>
             <div id="what-if-result" style="display:none; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; border-left: 4px solid #3b82f6;"></div>
-            
+
+            <!-- PROPOSE A SOLUTION (unchanged + chips) -->
             <h2>Propose a Solution</h2>
             <textarea id="proposal-input" placeholder="e.g., Build a new drainage system..."></textarea>
+
+            <!-- ============================================================ -->
+            <!-- FEATURE 5: QUICK-ACTION CHIPS                                -->
+            <!-- ============================================================ -->
+            <div id="quick-chips">
+                <button class="chip" onclick="appendChip('drainage system')">🌊 Drainage</button>
+                <button class="chip" onclick="appendChip('metro extension')">🚇 Metro</button>
+                <button class="chip" onclick="appendChip('green park')">🌳 Park</button>
+                <button class="chip" onclick="appendChip('road repair')">🛣️ Road Repair</button>
+                <button class="chip" onclick="appendChip('flood prevention')">🚧 Flood Control</button>
+            </div>
+
             <button class="action" onclick="evaluateProposal()">🔍 Evaluate Proposal</button>
-            
+
             <div id="advisor-response"></div>
             <button class="action" id="approve-btn" onclick="approveProposal()" disabled>✅ Approve & Implement</button>
         </div>
