@@ -28,24 +28,24 @@
 }
 
 /* =========================================
-   BACKGROUND LAYER
+   BACKGROUND LAYER (Grid, Nodes, 3D City)
    ========================================= */
 .gl-grid {
-    position: absolute; inset: 0;
+    position: absolute; inset: -50%;
     background-image: 
         linear-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px),
         linear-gradient(90deg, rgba(34, 211, 238, 0.1) 1px, transparent 1px);
     background-size: 40px 40px;
     transform: perspective(500px) rotateX(60deg) translateY(-100px);
     animation: gridMove 10s linear infinite;
-    z-index: 1;
+    z-index: -3; 
 }
 @keyframes gridMove {
     0% { background-position: 0 0; }
     100% { background-position: 0 40px; }
 }
 
-.gl-nodes { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.gl-nodes { position: absolute; inset: 0; z-index: -2; pointer-events: none; }
 .gl-node {
     position: absolute; width: 6px; height: 6px; border-radius: 50%;
     background: var(--gold);
@@ -58,18 +58,21 @@
 }
 
 /* =========================================
-   3D DIGITAL TWIN CITY 
+   3D DIGITAL TWIN CITY (ADJUSTED SIZE & POSITION)
    ========================================= */
 .gl-3d-scene {
     position: absolute; 
-    top: 55%; 
+    /* Push it further down so it sits behind the buttons */
+    top: 60%; 
     left: 50%;
-    transform: translate(-50%, -50%) scale(1.8); 
+    /* Reduced scale from 1.2 to 0.9 so it fits better */
+    transform: translate(-50%, -50%) scale(0.9); 
     width: 400px; 
     height: 400px; 
     perspective: 1200px;
-    z-index: 3; 
-    opacity: 0.4; 
+    z-index: -1; 
+    /* Lower opacity so it doesn't fight the text */
+    opacity: 0.3; 
     pointer-events: none;
 }
 
@@ -84,6 +87,7 @@
     transform-style: preserve-3d;
     transform: rotateX(60deg) rotateZ(45deg); 
     animation: cityRotate 30s linear infinite;
+    
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(5, 1fr);
@@ -96,6 +100,7 @@
     100% { transform: rotateX(60deg) rotateZ(360deg); }
 }
 
+/* The glowing square base */
 .gl-3d-city::before {
     content: "";
     position: absolute;
@@ -112,6 +117,7 @@
     pointer-events: none;
 }
 
+/* Buildings */
 .gl-3d-block {
     position: relative;
     width: 100%; 
@@ -123,11 +129,13 @@
     animation: blockPulse 3s ease-in-out infinite alternate;
 }
 
+/* The actual visible 3D building walls */
 .gl-3d-block::before,
 .gl-3d-block::after {
     content: "";
     position: absolute;
     left: 50%; top: 50%;
+    /* Reduced wall width from 24px to 16px to make the city look less bulky */
     width: 16px;
     height: var(--h);
     margin-left: -8px; 
@@ -143,6 +151,7 @@
     transform: translateY(-50%) rotateY(90deg);
 }
 
+/* Building roofs */
 .gl-3d-block {
     background: rgba(5, 9, 20, 0.9);
     border: 1px solid var(--neon);
@@ -165,6 +174,7 @@
     100% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.5); }
 }
 
+/* Orbiting Data Nodes */
 .gl-data-node {
     position: absolute;
     width: 8px; height: 8px;
@@ -186,7 +196,7 @@
    ========================================= */
 .gl-content { 
     position: relative; 
-    z-index: 9999; /* Forces content above the 3D city */
+    z-index: 100; 
     display: flex; flex-direction: column; align-items: center; 
     padding: 20px;
 }
@@ -205,7 +215,7 @@
 .gl-briefing {
     margin: 30px 0;
     padding: 20px 30px;
-    background: rgba(15, 23, 42, 0.85); /* Made slightly darker to hide the 3D blocks behind it */
+    background: rgba(15, 23, 42, 0.7);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(34, 211, 238, 0.3);
     border-radius: 12px;
@@ -232,7 +242,7 @@
 
 .gl-toggles { display: flex; gap: 15px; }
 .gl-toggle {
-    background: rgba(15, 23, 42, 0.85);
+    background: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(4px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #94a3b8;
