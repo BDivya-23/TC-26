@@ -14,9 +14,12 @@
 #map::after{content:"";position:absolute;inset:0;z-index:500;pointer-events:none;
  background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.6) 100%)}
 
-/* === ELEVATED START SCREEN === */
+/* =========================================
+   ELEVATED START SCREEN (BACKGROUND)
+   ========================================= */
 .gl-screen {
-    background: #050914; /* Deeper space blue */
+    /* Changed to a gradient so it doesn't block the grid */
+    background: radial-gradient(circle at center, #0a1128 0%, #050914 100%); 
     overflow: hidden;
     position: fixed; inset: 0; z-index: 5000; display: flex; flex-direction: column;
     align-items: center; justify-content: center; text-align: center; color: #fff;
@@ -27,20 +30,20 @@
 .gl-grid {
     position: absolute; inset: -50%;
     background-image: 
-        linear-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(34, 211, 238, 0.1) 1px, transparent 1px);
+        linear-gradient(rgba(34, 211, 238, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.15) 1px, transparent 1px);
     background-size: 40px 40px;
     transform: perspective(500px) rotateX(60deg) translateY(-100px);
     animation: gridMove 10s linear infinite;
-    z-index: -1;
+    z-index: 1; /* Above background, below text */
 }
 @keyframes gridMove {
     0% { background-position: 0 0; }
     100% { background-position: 0 40px; }
 }
 
-/* Glowing Nodes */
-.gl-nodes { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+/* Glowing Background Nodes */
+.gl-nodes { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .gl-node {
     position: absolute; width: 6px; height: 6px; border-radius: 50%;
     background: var(--gold);
@@ -52,23 +55,144 @@
     100% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 20px var(--neon); background: var(--neon); }
 }
 
-/* Layout & Typography */
-.gl-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; }
-.gl-screen h1 { font-size: 72px; margin: 0; letter-spacing: 12px; color: var(--neon); text-shadow: 0 0 30px var(--neon), 0 0 80px var(--neon2); }
-.gl-type { color: var(--neon2); font-size: 14px; letter-spacing: 4px; min-height: 20px; margin-top: 10px; text-shadow: 0 0 10px var(--neon2); }
+/* =========================================
+   3D DIGITAL TWIN CITY
+   ========================================= */
+.gl-3d-scene {
+    position: absolute; 
+    top: 60%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 400px;
+    perspective: 1000px;
+    z-index: 3; /* Above grid, below text */
+    opacity: 0.5; 
+    pointer-events: none;
+}
+
+.gl-3d-city {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(60deg) rotateZ(45deg) scale(0.9);
+    animation: cityRotate 30s linear infinite;
+}
+
+@keyframes cityRotate {
+    0% { transform: rotateX(60deg) rotateZ(0deg) scale(0.9); }
+    100% { transform: rotateX(60deg) rotateZ(360deg) scale(0.9); }
+}
+
+/* City Base Grid */
+.gl-3d-city::before {
+    content: "";
+    position: absolute;
+    top: -50px; left: -50px;
+    width: 200px; height: 200px;
+    background-image: 
+        linear-gradient(rgba(34, 211, 238, 0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.4) 1px, transparent 1px);
+    background-size: 24px 24px;
+    border: 2px solid var(--neon);
+    box-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
+    transform: translateZ(-1px);
+}
+
+/* Building Blocks */
+.gl-3d-block {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(5, 9, 20, 0.8); 
+    border: 1px solid var(--neon);
+    transform-style: preserve-3d;
+    transform: translateZ(calc(var(--h) / 2));
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.2);
+    animation: blockPulse 3s ease-in-out infinite alternate;
+}
+
+.gl-3d-block::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: var(--h);
+    bottom: 0; left: 0;
+    background: linear-gradient(to top, rgba(34, 211, 238, 0.1), rgba(34, 211, 238, 0.4));
+    border: 1px solid var(--neon);
+    transform-origin: bottom;
+    transform: rotateX(-90deg);
+}
+
+.gl-3d-block::after {
+    content: "";
+    position: absolute;
+    width: var(--h);
+    height: 100%;
+    top: 0; right: 0;
+    background: linear-gradient(to right, rgba(168, 85, 247, 0.1), rgba(168, 85, 247, 0.4));
+    border: 1px solid var(--neon2);
+    transform-origin: right;
+    transform: rotateY(90deg);
+}
+
+.gl-3d-block.highlight {
+    background: var(--neon);
+    box-shadow: 0 0 20px var(--neon);
+    animation: highlightPulse 2s infinite alternate;
+}
+@keyframes highlightPulse {
+    0% { opacity: 0.5; box-shadow: 0 0 5px var(--neon); }
+    100% { opacity: 1; box-shadow: 0 0 25px var(--neon); }
+}
+@keyframes blockPulse {
+    0% { box-shadow: 0 0 5px rgba(34, 211, 238, 0.1); }
+    100% { box-shadow: 0 0 15px rgba(34, 211, 238, 0.4); }
+}
+
+/* Orbiting Data Nodes */
+.gl-data-node {
+    position: absolute;
+    width: 8px; height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #fff, 0 0 30px var(--neon);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) translateZ(50px);
+    animation: orbit 6s linear infinite;
+}
+@keyframes orbit {
+    0% { transform: translate(-50%, -50%) translateZ(60px) rotate(0deg) translateX(80px) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) translateZ(60px) rotate(360deg) translateX(80px) rotate(-360deg); }
+}
+
+/* =========================================
+   FOREGROUND UI (Text & Buttons)
+   ========================================= */
+.gl-content { 
+    position: relative; 
+    z-index: 10; /* Highest layer */
+    display: flex; flex-direction: column; align-items: center; 
+    text-shadow: 0 4px 20px rgba(5, 9, 20, 0.9); 
+}
+
+.gl-screen h1 { font-size: 72px; margin: 0; letter-spacing: 12px; color: var(--neon); text-shadow: 0 0 30px var(--neon), 0 0 80px var(--neon2), 0 4px 20px rgba(5,9,20,1); }
+.gl-type { color: var(--neon2); font-size: 14px; letter-spacing: 4px; min-height: 20px; margin-top: 10px; text-shadow: 0 0 10px var(--neon2), 0 4px 20px rgba(5,9,20,1); }
 
 /* Glassmorphism Briefing Panel */
 .gl-briefing {
     margin: 30px 0;
     padding: 20px 30px;
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(10px);
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(12px);
     border: 1px solid rgba(34, 211, 238, 0.3);
     border-radius: 12px;
-    box-shadow: inset 0 0 20px rgba(34, 211, 238, 0.1), 0 8px 32px rgba(0,0,0,0.5);
+    box-shadow: inset 0 0 20px rgba(34, 211, 238, 0.1), 0 8px 32px rgba(0,0,0,0.6);
     max-width: 500px;
     font-family: 'Segoe UI', sans-serif;
     color: #cbd5e1; font-size: 15px; line-height: 1.6;
+    text-shadow: none; 
 }
 .gl-briefing strong { color: var(--gold); font-family: 'Orbitron', sans-serif; }
 
@@ -80,13 +204,15 @@
     background: linear-gradient(90deg, var(--neon), #a3e635);
     animation: glow 1.5s infinite alternate;
     transition: transform 0.2s;
+    box-shadow: 0 10px 30px rgba(5, 9, 20, 0.8); 
 }
 .gl-btn:hover { transform: scale(1.05); }
 @keyframes glow { from{box-shadow:0 0 15px var(--neon)} to{box-shadow:0 0 45px var(--neon)} }
 
 .gl-toggles { display: flex; gap: 15px; }
 .gl-toggle {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(4px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #94a3b8;
     padding: 8px 16px; border-radius: 20px;
@@ -114,130 +240,3 @@
 @keyframes pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}
  80%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(1)}}
 #gl-confetti{position:fixed;inset:0;z-index:2999;pointer-events:none}
-/* =========================================
-   ANIMATED DIGITAL TWIN HOOK (3D)
-   ========================================= */
-.gl-3d-scene {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 400px;
-    height: 400px;
-    perspective: 800px;
-    pointer-events: none;
-    z-index: -1; /* Behind the text */
-    opacity: 0.4; /* Subtle */
-}
-
-.gl-3d-city {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    /* Isometric tilt + slow rotation */
-    transform: rotateX(60deg) rotateZ(45deg);
-    animation: cityRotate 20s linear infinite;
-}
-
-@keyframes cityRotate {
-    0% { transform: rotateX(60deg) rotateZ(0deg); }
-    100% { transform: rotateX(60deg) rotateZ(360deg); }
-}
-
-.gl-3d-block {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: rgba(34, 211, 238, 0.1);
-    border: 1px solid rgba(34, 211, 238, 0.5);
-    transform-style: preserve-3d;
-    transform: translateZ(calc(var(--h) / 2)); /* Center the height */
-    box-shadow: 0 0 10px rgba(34, 211, 238, 0.2);
-    animation: blockPulse 3s ease-in-out infinite alternate;
-}
-
-/* Create the 3D walls of the building blocks */
-.gl-3d-block::before,
-.gl-3d-block::after {
-    content: "";
-    position: absolute;
-    background: rgba(34, 211, 238, 0.15);
-    border: 1px solid rgba(34, 211, 238, 0.4);
-}
-
-/* Front wall */
-.gl-3d-block::before {
-    width: 100%;
-    height: var(--h);
-    bottom: 0;
-    left: 0;
-    transform-origin: bottom;
-    transform: rotateX(-90deg);
-}
-
-/* Right wall */
-.gl-3d-block::after {
-    width: var(--h);
-    height: 100%;
-    top: 0;
-    right: 0;
-    transform-origin: right;
-    transform: rotateY(90deg);
-}
-
-@keyframes blockPulse {
-    0% { background: rgba(34, 211, 238, 0.05); border-color: rgba(34, 211, 238, 0.2); }
-    100% { background: rgba(34, 211, 238, 0.2); border-color: rgba(34, 211, 238, 0.8); box-shadow: 0 0 20px rgba(34, 211, 238, 0.6); }
-}
-
-/* Adjust the title to sit properly over the 3D city */
-.gl-content h1 {
-    position: relative;
-    z-index: 10; /* Keep text above the 3D buildings */
-    margin-top: -40px; /* Pull it down slightly into the city */
-}
-/* --- FIX: Bring 3D City to Life --- */
-
-/* Make the screen background transparent so the grid/city shows through */
-#gl-start {
-    background: radial-gradient(circle at center, #0a1128 0%, #050914 100%) !important;
-}
-
-/* Ensure the 3D scene is visible but behind the text */
-.gl-3d-scene {
-    z-index: 1 !important; 
-    opacity: 0.6 !important; /* Make it a bit brighter */
-}
-
-/* Bring the text, briefing, and buttons to the front */
-.gl-content {
-    z-index: 10;
-}
-
-/* Optional: Make the buildings look more like a neon digital city */
-.gl-3d-block {
-    background: rgba(34, 211, 238, 0.15);
-    border: 1px solid var(--neon);
-}
-.gl-3d-block::before,
-.gl-3d-block::after {
-    background: rgba(168, 85, 247, 0.15); /* Purple walls for a nice cyberpunk contrast */
-    border: 1px solid var(--neon2);
-}
-.gl-data-node {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 0 15px #fff, 0 0 30px var(--neon);
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%) translateZ(50px);
-    animation: orbit 6s linear infinite;
-}
-
-@keyframes orbit {
-    0% { transform: translate(-50%, -50%) translateZ(60px) rotate(0deg) translateX(80px) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) translateZ(60px) rotate(360deg) translateX(80px) rotate(-360deg); }
-}
