@@ -84,7 +84,8 @@ function approveProposal() {
     }
 
     cityState.budget -= currentProposal.cost;
-    area.flood = Math.max(0, area.flood - currentProposal.impact);
+    area.flood = 0;
+    area.traffic = 0; 
     area.solved = true;
     
     let happinessBonus = 5; 
