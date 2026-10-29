@@ -1,222 +1,270 @@
-/* TwinCity game layer: add AFTER app.js. Reuses your existing game logic. */
-(function(){
-  const TOTAL = 10;
-  let muted = false, prevSolved = 0, started = false, over = false, ac;
+/* TwinCity game layer: add AFTER style.css */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap');
+:root{--neon:#22d3ee;--neon2:#a855f7;--gold:#fbbf24}
 
-  // ---------- Sound (no audio files needed) ----------
-  function beep(freq, dur, type='square', vol=.07, when=0){
-    if(muted) return;
-    ac = ac || new (window.AudioContext||window.webkitAudioContext)();
-    const o=ac.createOscillator(), g=ac.createGain(), t=ac.currentTime+when;
-    o.type=type; o.frequency.value=freq; g.gain.setValueAtTime(vol,t);
-    g.gain.exponentialRampToValueAtTime(.001,t+dur);
-    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t+dur);
-  }
-  const sfx = {
-    click:()=>beep(520,.08),
-    start:()=>[392,523,659,784].forEach((f,i)=>beep(f,.18,'triangle',.1,i*.1)),
-    win:()=>[523,659,784,1047,1319].forEach((f,i)=>beep(f,.25,'triangle',.1,i*.09)),
-    lose:()=>[400,300,200,120].forEach((f,i)=>beep(f,.3,'sawtooth',.08,i*.15))
-  };
+#top-bar{font-family:'Orbitron',sans-serif;border-bottom:2px solid var(--neon)!important;box-shadow:0 0 18px rgba(34,211,238,.45)}
+#dashboard{font-family:'Orbitron','Segoe UI',sans-serif;border-left:2px solid var(--neon2)!important;box-shadow:-6px 0 30px rgba(168,85,247,.35)}
+#dashboard h1,#dashboard h2{letter-spacing:2px;text-shadow:0 0 8px rgba(34,211,238,.6)}
+.action{transition:transform .12s,box-shadow .12s}
+.action:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 0 16px var(--neon)}
+.action:active{transform:scale(.97)}
+.map-marker{border:2px solid #ef4444!important;animation:pulse 1.6s infinite;cursor:pointer}
+.map-marker.solved{border-color:#10b981!important;animation:none;box-shadow:0 0 14px #10b981}
+@keyframes pulse{0%,100%{box-shadow:0 0 4px #ef4444}50%{box-shadow:0 0 18px #ef4444}}
+#map::after{content:"";position:absolute;inset:0;z-index:500;pointer-events:none;
+ background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.6) 100%)}
 
-  // ---------- Screens & HTML Injection ----------
-  document.body.insertAdjacentHTML('beforeend', `
-   <!-- START SCREEN -->
-   <div id="gl-start" class="gl-screen">
-     <!-- Background Grid & Nodes -->
-     <div class="gl-grid"></div>
-     <div class="gl-nodes" id="gl-nodes"></div>
-     
-     <!-- THE DIGITAL TWIN 3D HOOK -->
-     <div class="gl-3d-scene">
-       <div class="gl-3d-city" id="gl-3d-city"></div>
-     </div>
+/* =========================================
+   START SCREEN BASE
+   ========================================= */
+.gl-screen {
+    background: radial-gradient(circle at center, #0a1128 0%, #050914 100%);
+    overflow: hidden;
+    position: fixed; inset: 0; z-index: 5000; 
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; 
+    text-align: center; color: #fff;
+    font-family: 'Orbitron', sans-serif;
+}
 
-     <!-- Main Content -->
-     <div class="gl-content">
-       <h1>TWINCITY</h1>
-       <p class="gl-type" id="gl-typewriter"></p>
-       
-       <!-- Briefing Panel -->
-       <div class="gl-briefing">
-         <p>Chennai is flooding and gridlocked. You have <strong>₹250 Cr</strong>.<br>Fix all 10 zones before the money runs out.</p>
-       </div>
+/* =========================================
+   BACKGROUND LAYER (Grid, Nodes, 3D City)
+   ========================================= */
+.gl-grid {
+    position: absolute; inset: -50%;
+    background-image: 
+        linear-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    transform: perspective(500px) rotateX(60deg) translateY(-100px);
+    animation: gridMove 10s linear infinite;
+    z-index: -3; 
+}
+@keyframes gridMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 40px; }
+}
 
-       <!-- Controls -->
-       <div class="gl-controls">
-         <button class="gl-btn" id="gl-play">▶ START MISSION</button>
-         <div class="gl-toggles">
-           <button class="gl-toggle" id="gl-toggle-fs">⛶ Fullscreen</button>
-           <button class="gl-toggle" id="gl-toggle-mute">🔊 Sound On</button>
-         </div>
-       </div>
-     </div>
-   </div>
+.gl-nodes { position: absolute; inset: 0; z-index: -2; pointer-events: none; }
+.gl-node {
+    position: absolute; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 12px var(--gold);
+    animation: pulseNode 3s infinite alternate;
+}
+@keyframes pulseNode {
+    0% { transform: scale(0.5); opacity: 0.2; }
+    100% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 20px var(--neon); background: var(--neon); }
+}
 
-   <!-- GAME OVER SCREEN -->
-   <div id="gl-over" class="gl-screen" style="display:none">
-     <div class="gl-content">
-       <h1>GAME OVER</h1>
-       <p>The treasury is empty. Chennai is still stuck.</p>
-       <button class="gl-btn" onclick="resetGame()">↻ TRY AGAIN</button>
-     </div>
-   </div>
+/* =========================================
+   3D DIGITAL TWIN CITY (SCALED UP)
+   ========================================= */
+.gl-3d-scene {
+    position: absolute; 
+    top: 55%; /* Positioned slightly below the center to avoid the title */
+    left: 50%;
+    /* SCALED UP from 0.9 to 1.8 */
+    transform: translate(-50%, -50%) scale(1.8); 
+    width: 400px; 
+    height: 400px; 
+    perspective: 1200px;
+    z-index: -1; 
+    opacity: 0.4; /* Slightly more visible */
+    pointer-events: none;
+}
 
-   <!-- HUD -->
-   <div id="hud">
-     <div class="cell"><small>SCORE</small><b id="hud-score">0</b></div>
-     <div class="cell"><small>ZONES</small><b id="hud-zones">0/${TOTAL}</b></div>
-     <div class="cell"><small>RANK</small><b id="hud-rank" style="font-size:13px">ROOKIE</b></div>
-   </div>
-   
-   <div id="gl-toast"></div><canvas id="gl-confetti"></canvas>`);
-
-  const $ = id => document.getElementById(id);
-  $('hud').style.display='none';
-
-  // ---------- Typewriter Effect ----------
-  const typeText = "DIGITAL CHENNAI · MAYOR SIMULATOR";
-  let typeIndex = 0;
-  function typeWriter() {
-    if (typeIndex < typeText.length) {
-      $('gl-typewriter').innerHTML += typeText.charAt(typeIndex);
-      typeIndex++;
-      setTimeout(typeWriter, 50);
-    }
-  }
-  setTimeout(typeWriter, 400);
-
-  // ---------- Generate Glowing Background Nodes ----------
-  const nodesContainer = $('gl-nodes');
-  for(let i=0; i<15; i++) {
-    const node = document.createElement('div');
-    node.className = 'gl-node';
-    node.style.left = `${Math.random() * 80 + 10}%`;
-    node.style.top = `${Math.random() * 80 + 10}%`;
-    node.style.animationDelay = `${Math.random() * 2}s`;
-    node.style.animationDuration = `${1.5 + Math.random() * 2}s`;
-    nodesContainer.appendChild(node);
-  }
-
-  // ---------- Generate 3D City Blocks ----------
-  const cityContainer = $('gl-3d-city');
-  const gridSize = 5; 
-  const blockSpacing = 24; 
-  
-  // Calculate the offset to perfectly center the 5x5 grid around (0,0)
-  const offset = ((gridSize - 1) * blockSpacing) / 2;
-
-  for(let x=0; x<gridSize; x++) {
-    for(let y=0; y<gridSize; y++) {
-      const block = document.createElement('div');
-      block.className = 'gl-3d-block';
-      
-      // Randomize height
-      const h = Math.random() * 40 + 15;
-      block.style.setProperty('--h', `${h}px`);
-      
-      // Center the grid mathematically
-      const posX = (x * blockSpacing) - offset;
-      const posY = (y * blockSpacing) - offset;
-      
-      block.style.left = `${posX}px`;
-      block.style.top = `${posY}px`;
-      
-      // Center building is a tall landmark
-      if(x === 2 && y === 2) {
-          block.classList.add('highlight');
-          block.style.setProperty('--h', `70px`);
-      } else if(Math.random() > 0.6) {
-          block.classList.add('highlight');
-      }
-      
-      block.style.animationDelay = `${Math.random() * 2}s`;
-      cityContainer.appendChild(block);
-    }
-  }
-
-  // Add floating data nodes to the 3D city
-  for(let i=0; i<3; i++) {
-    const dataNode = document.createElement('div');
-    dataNode.className = 'gl-data-node';
-    dataNode.style.animationDelay = `${i * 2}s`;
-    cityContainer.appendChild(dataNode);
-  }
-
-  // ---------- Toggles ----------
-  $('gl-toggle-fs').onclick = () => {
-    if(document.fullscreenElement) {
-      document.exitFullscreen();
-      $('gl-toggle-fs').innerText = "⛶ Fullscreen";
-    } else {
-      document.documentElement.requestFullscreen();
-      $('gl-toggle-fs').innerText = "⛶ Exit Fullscreen";
-    }
-  };
-
-  $('gl-toggle-mute').onclick = () => {
-    muted = !muted;
-    $('gl-toggle-mute').innerText = muted ? "🔇 Sound Off" : "🔊 Sound On";
-  };
-
-  // ---------- Start Game ----------
-  $('gl-play').onclick = () => {
-    started = true; 
-    sfx.start();
-    $('gl-start').style.display='none'; 
-    $('hud').style.display='flex';
-    document.documentElement.requestFullscreen?.().catch(()=>{});
-    setTimeout(()=>map && map.invalidateSize(), 300);
-  };
-
-  // ---------- HUD ----------
-  function rank(n){return n>=10?'LEGENDARY MAYOR':n>=7?'MAYOR':n>=4?'DEPUTY MAYOR':n>=1?'COUNCILLOR':'ROOKIE'}
-  function refreshHud(){
-    const solved = Object.values(cityState.areas).filter(a=>a.solved).length;
-    const score = solved*100 + cityState.budget*2 + cityState.happiness*3;
-    $('hud-score').textContent = score; $('hud-zones').textContent = solved+'/'+TOTAL;
-    $('hud-rank').textContent = rank(solved);
-    if(solved > prevSolved){ toast('ZONE CLEARED! +100'); sfx.win(); confetti(); }
-    prevSolved = solved;
+.gl-3d-city {
+    position: absolute;
+    top: 50%; 
+    left: 50%;
+    width: 200px; 
+    height: 200px;
+    margin-top: -100px; 
+    margin-left: -100px;
+    transform-style: preserve-3d;
+    transform: rotateX(60deg) rotateZ(45deg); 
+    animation: cityRotate 30s linear infinite;
     
-    if(!over && solved < TOTAL && cityState.budget < 15){
-      over = true; setTimeout(()=>{ sfx.lose(); $('gl-over').style.display='flex'; }, 1200);
-    }
-  }
-  
-  const _ud = window.updateDashboard;
-  window.updateDashboard = function(){ _ud.apply(this, arguments); refreshHud(); };
-  
-  const _sa = window.selectArea;
-  window.selectArea = function(){ sfx.click(); return _sa.apply(this, arguments); };
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    padding: 0;
+    box-sizing: border-box;
+}
 
-  // ---------- Effects ----------
-  function toast(t){ const el=$('gl-toast'); el.textContent=t; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); }
-  function confetti(){
-    const c=$('gl-confetti'), x=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
-    const P=Array.from({length:120},()=>({x:innerWidth/2,y:innerHeight/2,vx:(Math.random()-.5)*14,vy:Math.random()*-14,
-      s:4+Math.random()*5,c:`hsl(${Math.random()*360},90%,60%)`}));
-    let f=0;(function tick(){ x.clearRect(0,0,c.width,c.height);
-      P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.4;x.fillStyle=p.c;x.fillRect(p.x,p.y,p.s,p.s)});
-      if(++f<90) requestAnimationFrame(tick); else x.clearRect(0,0,c.width,c.height); })();
-  }
+@keyframes cityRotate {
+    0% { transform: rotateX(60deg) rotateZ(0deg); }
+    100% { transform: rotateX(60deg) rotateZ(360deg); }
+}
 
-  // ---------- Map Setup ----------
-  window.addEventListener('load', () => setTimeout(() => {
-    if(!window.map) return;
-    map.eachLayer(l => { if(l instanceof L.TileLayer) map.removeLayer(l); });
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19, 
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-    refreshHud();
-  }, 400));
+/* The glowing square base */
+.gl-3d-city::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: 
+        linear-gradient(rgba(34, 211, 238, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.2) 1px, transparent 1px);
+    background-size: 40px 40px;
+    border: 2px solid var(--neon);
+    box-shadow: 0 0 30px rgba(34, 211, 238, 0.3), inset 0 0 20px rgba(34, 211, 238, 0.2);
+    transform: translateZ(-1px);
+    z-index: 1;
+    pointer-events: none;
+}
 
-  document.addEventListener('keydown', e => {
-    if(/TEXTAREA|INPUT/.test(e.target.tagName)) return;
-    if(e.key==='Enter' && !started) $('gl-play').click();
-    if(e.key.toLowerCase()==='m') $('gl-toggle-mute').click();
-    if(e.key.toLowerCase()==='f') $('gl-toggle-fs').click();
-    if(e.key==='Escape') stopExploration();
-  });
-})();
+/* Buildings */
+.gl-3d-block {
+    position: relative;
+    width: 100%; 
+    height: 100%;
+    background: transparent;
+    transform-style: preserve-3d;
+    transform: translateZ(calc(var(--h) / 2));
+    z-index: 2;
+    animation: blockPulse 3s ease-in-out infinite alternate;
+}
+
+/* The actual visible 3D building walls */
+.gl-3d-block::before,
+.gl-3d-block::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 16px;
+    height: var(--h);
+    margin-left: -8px; 
+    background: linear-gradient(to top, rgba(34, 211, 238, 0.1), rgba(34, 211, 238, 0.6));
+    border: 1px solid var(--neon);
+    transform-origin: bottom center;
+    transform: translateY(-50%) rotateX(-90deg);
+}
+
+.gl-3d-block::after {
+    background: linear-gradient(to right, rgba(168, 85, 247, 0.1), rgba(168, 85, 247, 0.6));
+    border: 1px solid var(--neon2);
+    transform: translateY(-50%) rotateY(90deg);
+}
+
+/* Building roofs */
+.gl-3d-block {
+    background: rgba(5, 9, 20, 0.9);
+    border: 1px solid var(--neon);
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+}
+
+.gl-3d-block.highlight {
+    background: var(--neon);
+    box-shadow: 0 0 30px var(--neon);
+    border-color: #fff;
+    animation: highlightPulse 2s infinite alternate;
+}
+
+@keyframes highlightPulse {
+    0% { opacity: 0.6; box-shadow: 0 0 10px var(--neon); }
+    100% { opacity: 1; box-shadow: 0 0 40px var(--neon); }
+}
+@keyframes blockPulse {
+    0% { box-shadow: 0 0 5px rgba(34, 211, 238, 0.1); }
+    100% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.5); }
+}
+
+/* Orbiting Data Nodes */
+.gl-data-node {
+    position: absolute;
+    width: 8px; height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #fff, 0 0 30px var(--neon);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) translateZ(40px);
+    animation: orbit 6s linear infinite;
+    z-index: 3;
+}
+@keyframes orbit {
+    0% { transform: translate(-50%, -50%) translateZ(40px) rotate(0deg) translateX(100px) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) translateZ(40px) rotate(360deg) translateX(100px) rotate(-360deg); }
+}
+
+/* =========================================
+   FOREGROUND LAYER (Text & Buttons)
+   ========================================= */
+.gl-content { 
+    position: relative; 
+    z-index: 100; 
+    display: flex; flex-direction: column; align-items: center; 
+    padding: 20px;
+}
+
+.gl-screen h1 { 
+    font-size: 72px; margin: 0; letter-spacing: 12px; color: var(--neon); 
+    text-shadow: 0 0 30px var(--neon), 0 0 80px var(--neon2), 0 4px 20px rgba(5,9,20,1); 
+}
+.gl-type { 
+    color: var(--neon2); font-size: 14px; letter-spacing: 4px; 
+    min-height: 20px; margin-top: 10px; 
+    text-shadow: 0 0 10px var(--neon2), 0 4px 20px rgba(5,9,20,1); 
+}
+
+/* Glassmorphism Briefing Panel */
+.gl-briefing {
+    margin: 30px 0;
+    padding: 20px 30px;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(34, 211, 238, 0.3);
+    border-radius: 12px;
+    box-shadow: inset 0 0 20px rgba(34, 211, 238, 0.1), 0 8px 32px rgba(0,0,0,0.6);
+    max-width: 500px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #cbd5e1; font-size: 15px; line-height: 1.6;
+    text-shadow: none; 
+}
+.gl-briefing strong { color: var(--gold); font-family: 'Orbitron', sans-serif; }
+
+/* Controls & Toggles */
+.gl-controls { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 10px; }
+.gl-btn {
+    font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: 3px;
+    padding: 16px 56px; border: none; border-radius: 50px; cursor: pointer; color: #000;
+    background: linear-gradient(90deg, var(--neon), #a3e635);
+    animation: glow 1.5s infinite alternate;
+    transition: transform 0.2s;
+    box-shadow: 0 10px 30px rgba(5, 9, 20, 0.8); 
+}
+.gl-btn:hover { transform: scale(1.05); }
+@keyframes glow { from{box-shadow:0 0 15px var(--neon)} to{box-shadow:0 0 45px var(--neon)} }
+
+.gl-toggles { display: flex; gap: 15px; }
+.gl-toggle {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #94a3b8;
+    padding: 8px 16px; border-radius: 20px;
+    font-family: 'Orbitron', sans-serif; font-size: 12px;
+    cursor: pointer; transition: all 0.2s;
+}
+.gl-toggle:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: var(--neon); }
+
+/* Game Over Screen */
+#gl-over h1 { color: #ef4444; text-shadow: 0 0 25px #ef4444; }
+#gl-over .gl-btn { background: #ef4444; color: #fff; animation: none; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+
+/* HUD */
+#hud{position:fixed;top:110px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;gap:10px;
+ font-family:'Orbitron',sans-serif;color:#fff}
+#hud .cell{background:rgba(10,15,30,.85);border:1px solid var(--neon);border-radius:10px;padding:6px 14px;
+ text-align:center;box-shadow:0 0 12px rgba(34,211,238,.4);min-width:90px}
+#hud small{display:block;font-size:9px;letter-spacing:2px;color:#7dd3fc}
+#hud b{font-size:18px;color:var(--gold)}
+
+/* Toast + confetti */
+#gl-toast{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%) scale(.5);z-index:3000;opacity:0;
+ font-family:'Orbitron',sans-serif;font-size:44px;font-weight:800;color:var(--gold);text-shadow:0 0 20px var(--gold);pointer-events:none}
+#gl-toast.show{animation:pop 1.6s ease-out}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}
+ 80%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(1)}}
+#gl-confetti{position:fixed;inset:0;z-index:2999;pointer-events:none}
