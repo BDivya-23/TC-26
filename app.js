@@ -568,3 +568,120 @@ window.addEventListener('load', () => {
         }
     }, 250);
 });
+/* =============================================================
+   FEATURE: MAP TRANSFORMATIONS (THE DIGITAL TWIN EFFECT)
+   ============================================================= */
+
+// 1. Create a dedicated layer group for our upgrades
+let infrastructureLayer;
+
+// We initialize this after the map loads
+function initInfrastructureLayer() {
+    if (typeof map !== 'undefined' && !infrastructureLayer) {
+        infrastructureLayer = L.layerGroup().addTo(map);
+    }
+}
+
+// 2. The main drawing function
+function renderCityInfrastructure() {
+    if (!infrastructureLayer) initInfrastructureLayer();
+    if (!infrastructureLayer) return;
+
+    // Clear existing drawings so we don't stack them if re-run
+    infrastructureLayer.clearLayers();
+
+    // --- VADAPALANI SOLVED: DRAW METRO LINE ---
+    if (cityState.areas['Vadapalani'].solved) {
+        // A blue dashed line representing the new Metro line
+        const metroCoords = [
+            [13.0503, 80.2121], // Vadapalani
+            [13.0450, 80.2200], // Towards Koyambedu
+            [13.0400, 80.2350],
+            [13.0350, 80.2500]
+        ];
+
+        const metroLine = L.polyline(metroCoords, {
+            color: '#3b82f6',
+            weight: 6,
+            opacity: 0.9,
+            dashArray: '10, 10',
+            lineCap: 'round',
+            className: 'metro-line-anim' // We will animate this in CSS
+        }).addTo(infrastructureLayer);
+
+        // Add small station dots
+        L.circleMarker([13.0503, 80.2121], { radius: 6, color: '#fff', weight: 2, fillColor: '#3b82f6', fillOpacity: 1 }).addTo(infrastructureLayer);
+        
+        // Add a label
+        metroLine.bindTooltip("🚇 New Metro Extension", { permanent: true, direction: "right", className: 'map-tooltip' });
+    }
+
+    // --- VELACHERY SOLVED: DRAW GREEN FLOOD PLAZA / PARK ---
+    if (cityState.areas['Velachery'].solved) {
+        // A semi-transparent green polygon representing the new flood absorption park
+        const parkCoords = [
+            [12.9800, 80.2150],
+            [12.9780, 80.2210],
+            [12.9720, 80.2220],
+            [12.9710, 80.2160],
+            [12.9750, 80.2130]
+        ];
+
+        L.polygon(parkCoords, {
+            color: '#10b981',
+            weight: 2,
+            fillColor: '#10b981',
+            fillOpacity: 0.4,
+            className: 'park-fade-in'
+        }).addTo(infrastructureLayer).bindTooltip("🌳 Flood Absorption Park", { permanent: true, direction: "center", className: 'map-tooltip' });
+    }
+
+    // --- PORUR SOLVED: DRAW RING ROAD / HIGHWAY ---
+    if (cityState.areas['Porur'].solved) {
+        // An orange thick line representing a new bypass road
+        const ringRoadCoords = [
+            [13.0358, 80.1568], // Porur
+            [13.0450, 80.1400], // Towards DLF
+            [13.0600, 80.1450], // Towards Ramapuram
+            [13.0700, 80.1600],
+            [13.0600, 80.1800],
+            [13.0400, 80.1800], // Back down to Mount Poonamallee Rd
+            [13.0358, 80.1568]  // Loop back to Porur
+        ];
+
+        L.polyline(ringRoadCoords, {
+            color: '#f59e0b',
+            weight: 8,
+            opacity: 0.8,
+            lineCap: 'round',
+            lineJoin: 'round'
+        }).addTo(infrastructureLayer).bindTooltip("🛣️ New Porur Bypass", { permanent: true, direction: "center", className: 'map-tooltip' });
+    }
+}
+
+// 3. Hook into approveProposal to trigger the drawing
+// We wrap the original approveProposal so the map updates exactly when the budget updates
+(function patchApproveProposalForMap() {
+    if (typeof approveProposal !== 'function') return;
+    if (window._mapPatchApplied) return;
+
+    const originalApprove = approveProposal;
+    window.approveProposal = function() {
+        // Run the original function (which checks funds, updates budget, etc.)
+        originalApprove.apply(this, arguments);
+        
+        // Wait a brief moment for the game state to update, then draw the map!
+        setTimeout(() => {
+            try { renderCityInfrastructure(); } catch (e) { console.warn("Map render error:", e); }
+        }, 100);
+    };
+    window._mapPatchApplied = true;
+})();
+
+// 4. Initial draw (in case the player reloaded a saved game)
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        initInfrastructureLayer();
+        renderCityInfrastructure();
+    }, 500); 
+});
