@@ -57,52 +57,61 @@
     100% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 20px var(--neon); background: var(--neon); }
 }
 
+/* =========================================
+   3D DIGITAL TWIN CITY (LOCKED & CENTERED)
+   ========================================= */
 .gl-3d-scene {
     position: absolute; 
     top: 50%; 
     left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100vw; 
-    height: 100vh; 
-    perspective: 1200px;
+    transform: translate(-50%, -50%) scale(1.4);
+    width: 400px; 
+    height: 400px; 
+    perspective: 1000px;
     z-index: -1; 
-    opacity: 0.35; 
+    opacity: 0.6; 
     pointer-events: none;
 }
 
 .gl-3d-city {
     position: absolute;
-    top: 50%; left: 50%;
-    width: 100%; height: 100%;
+    top: 50%; 
+    left: 50%;
+    /* Center the 200x200 grid exactly at the middle of the scene */
+    width: 200px; 
+    height: 200px;
+    margin-top: -100px; 
+    margin-left: -100px;
     transform-style: preserve-3d;
-    transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg) scale(1.5); 
-    animation: cityRotate 40s linear infinite;
+    transform: rotateX(60deg) rotateZ(45deg); 
+    animation: cityRotate 30s linear infinite;
 }
 
 @keyframes cityRotate {
-    0% { transform: translate(-50%, -50%) rotateX(60deg) rotateZ(0deg) scale(1.5); }
-    100% { transform: translate(-50%, -50%) rotateX(60deg) rotateZ(360deg) scale(1.5); }
+    0% { transform: rotateX(60deg) rotateZ(0deg); }
+    100% { transform: rotateX(60deg) rotateZ(360deg); }
 }
 
+/* The glowing square base */
 .gl-3d-city::before {
     content: "";
     position: absolute;
-    top: 50%; left: 50%;
-    width: 160px; height: 160px; 
-    margin-top: -80px; margin-left: -80px;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background-image: 
-        linear-gradient(rgba(34, 211, 238, 0.3) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(34, 211, 238, 0.3) 1px, transparent 1px);
-    background-size: 28px 28px; 
+        linear-gradient(rgba(34, 211, 238, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.2) 1px, transparent 1px);
+    background-size: 24px 24px; /* Matches the JS spacing */
     border: 2px solid var(--neon);
-    box-shadow: 0 0 40px rgba(34, 211, 238, 0.2);
+    box-shadow: 0 0 30px rgba(34, 211, 238, 0.3), inset 0 0 20px rgba(34, 211, 238, 0.2);
     transform: translateZ(-1px);
 }
 
+/* Buildings */
 .gl-3d-block {
     position: absolute;
-    width: 20px; height: 20px;
-    background: rgba(5, 9, 20, 0.8); 
+    width: 24px; height: 24px;
+    background: rgba(5, 9, 20, 0.9); 
     border: 1px solid var(--neon);
     transform-style: preserve-3d;
     transform: translateZ(calc(var(--h) / 2));
@@ -146,6 +155,7 @@
     100% { box-shadow: 0 0 15px rgba(34, 211, 238, 0.4); }
 }
 
+/* Orbiting Data Nodes */
 .gl-data-node {
     position: absolute;
     width: 8px; height: 8px;
@@ -153,12 +163,12 @@
     border-radius: 50%;
     box-shadow: 0 0 15px #fff, 0 0 30px var(--neon);
     top: 50%; left: 50%;
-    transform: translate(-50%, -50%) translateZ(50px);
+    transform: translate(-50%, -50%) translateZ(40px);
     animation: orbit 6s linear infinite;
 }
 @keyframes orbit {
-    0% { transform: translate(-50%, -50%) translateZ(60px) rotate(0deg) translateX(80px) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) translateZ(60px) rotate(360deg) translateX(80px) rotate(-360deg); }
+    0% { transform: translate(-50%, -50%) translateZ(40px) rotate(0deg) translateX(100px) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) translateZ(40px) rotate(360deg) translateX(100px) rotate(-360deg); }
 }
 
 /* =========================================
