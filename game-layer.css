@@ -197,3 +197,31 @@
     z-index: 10; /* Keep text above the 3D buildings */
     margin-top: -40px; /* Pull it down slightly into the city */
 }
+/* --- FIX: Bring 3D City to Life --- */
+
+/* Make the screen background transparent so the grid/city shows through */
+#gl-start {
+    background: radial-gradient(circle at center, #0a1128 0%, #050914 100%) !important;
+}
+
+/* Ensure the 3D scene is visible but behind the text */
+.gl-3d-scene {
+    z-index: 1 !important; 
+    opacity: 0.6 !important; /* Make it a bit brighter */
+}
+
+/* Bring the text, briefing, and buttons to the front */
+.gl-content {
+    z-index: 10;
+}
+
+/* Optional: Make the buildings look more like a neon digital city */
+.gl-3d-block {
+    background: rgba(34, 211, 238, 0.15);
+    border: 1px solid var(--neon);
+}
+.gl-3d-block::before,
+.gl-3d-block::after {
+    background: rgba(168, 85, 247, 0.15); /* Purple walls for a nice cyberpunk contrast */
+    border: 1px solid var(--neon2);
+}
