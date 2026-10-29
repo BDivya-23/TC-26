@@ -59,38 +59,43 @@
 
 .gl-3d-scene {
     position: absolute; 
-    top: 60%; left: 50%;
+    top: 50%; 
+    left: 50%;
     transform: translate(-50%, -50%);
-    width: 400px; height: 400px;
-    perspective: 1000px;
-    z-index: -1; /* Deep in the background */
-    opacity: 0.4; 
+    width: 100vw; 
+    height: 100vh; 
+    perspective: 1200px;
+    z-index: -1; 
+    opacity: 0.35; 
     pointer-events: none;
 }
 
 .gl-3d-city {
-    position: relative;
+    position: absolute;
+    top: 50%; left: 50%;
     width: 100%; height: 100%;
     transform-style: preserve-3d;
-    transform: rotateX(60deg) rotateZ(45deg) scale(0.9);
-    animation: cityRotate 30s linear infinite;
+    transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg) scale(1.5); 
+    animation: cityRotate 40s linear infinite;
 }
+
 @keyframes cityRotate {
-    0% { transform: rotateX(60deg) rotateZ(0deg) scale(0.9); }
-    100% { transform: rotateX(60deg) rotateZ(360deg) scale(0.9); }
+    0% { transform: translate(-50%, -50%) rotateX(60deg) rotateZ(0deg) scale(1.5); }
+    100% { transform: translate(-50%, -50%) rotateX(60deg) rotateZ(360deg) scale(1.5); }
 }
 
 .gl-3d-city::before {
     content: "";
     position: absolute;
-    top: -50px; left: -50px;
-    width: 200px; height: 200px;
+    top: 50%; left: 50%;
+    width: 160px; height: 160px; 
+    margin-top: -80px; margin-left: -80px;
     background-image: 
-        linear-gradient(rgba(34, 211, 238, 0.4) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(34, 211, 238, 0.4) 1px, transparent 1px);
-    background-size: 24px 24px;
+        linear-gradient(rgba(34, 211, 238, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.3) 1px, transparent 1px);
+    background-size: 28px 28px; 
     border: 2px solid var(--neon);
-    box-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
+    box-shadow: 0 0 40px rgba(34, 211, 238, 0.2);
     transform: translateZ(-1px);
 }
 
@@ -161,7 +166,7 @@
    ========================================= */
 .gl-content { 
     position: relative; 
-    z-index: 100; /* Safely on top of everything */
+    z-index: 100; 
     display: flex; flex-direction: column; align-items: center; 
     padding: 20px;
 }
