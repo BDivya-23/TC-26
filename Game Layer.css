@@ -1,0 +1,41 @@
+/* TwinCity game layer: add AFTER style.css */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap');
+:root{--neon:#22d3ee;--neon2:#a855f7;--gold:#fbbf24}
+#top-bar{font-family:'Orbitron',sans-serif;border-bottom:2px solid var(--neon)!important;box-shadow:0 0 18px rgba(34,211,238,.45)}
+#dashboard{font-family:'Orbitron','Segoe UI',sans-serif;border-left:2px solid var(--neon2)!important;box-shadow:-6px 0 30px rgba(168,85,247,.35)}
+#dashboard h1,#dashboard h2{letter-spacing:2px;text-shadow:0 0 8px rgba(34,211,238,.6)}
+.action{transition:transform .12s,box-shadow .12s}
+.action:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 0 16px var(--neon)}
+.action:active{transform:scale(.97)}
+.map-marker{border:2px solid #ef4444!important;animation:pulse 1.6s infinite;cursor:pointer}
+.map-marker.solved{border-color:#10b981!important;animation:none;box-shadow:0 0 14px #10b981}
+@keyframes pulse{0%,100%{box-shadow:0 0 4px #ef4444}50%{box-shadow:0 0 18px #ef4444}}
+#map::after{content:"";position:absolute;inset:0;z-index:500;pointer-events:none;
+ background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.6) 100%)}
+/* HUD */
+#hud{position:fixed;top:62px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;gap:10px;
+ font-family:'Orbitron',sans-serif;color:#fff}
+#hud .cell{background:rgba(10,15,30,.85);border:1px solid var(--neon);border-radius:10px;padding:6px 14px;
+ text-align:center;box-shadow:0 0 12px rgba(34,211,238,.4);min-width:90px}
+#hud small{display:block;font-size:9px;letter-spacing:2px;color:#7dd3fc}
+#hud b{font-size:18px;color:var(--gold)}
+#hud button{background:rgba(10,15,30,.85);border:1px solid var(--neon2);color:#fff;border-radius:10px;padding:0 12px;cursor:pointer}
+/* Screens */
+.gl-screen{position:fixed;inset:0;z-index:5000;display:flex;flex-direction:column;align-items:center;
+ justify-content:center;text-align:center;color:#fff;font-family:'Orbitron',sans-serif;
+ background:radial-gradient(circle at 50% 40%,#1e1b4b,#020617 70%)}
+.gl-screen h1{font-size:64px;margin:0;letter-spacing:8px;color:var(--neon);text-shadow:0 0 25px var(--neon),0 0 60px var(--neon2)}
+.gl-screen p{color:#94a3b8;letter-spacing:2px;margin:10px 0}
+.gl-screen .keys{display:flex;gap:18px;margin:24px 0;font-size:12px;color:#cbd5e1;flex-wrap:wrap;justify-content:center}
+.gl-screen .keys span{border:1px solid #334155;border-radius:8px;padding:8px 12px;background:rgba(255,255,255,.04)}
+.gl-btn{font-family:inherit;font-weight:800;font-size:22px;letter-spacing:4px;padding:16px 56px;border:none;border-radius:50px;
+ cursor:pointer;color:#000;background:linear-gradient(90deg,var(--neon),#a3e635);animation:glow 1.5s infinite alternate}
+@keyframes glow{from{box-shadow:0 0 10px var(--neon)}to{box-shadow:0 0 40px var(--neon)}}
+#gl-over h1{color:#ef4444;text-shadow:0 0 25px #ef4444}
+/* Toast + confetti */
+#gl-toast{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%) scale(.5);z-index:3000;opacity:0;
+ font-family:'Orbitron',sans-serif;font-size:44px;font-weight:800;color:var(--gold);text-shadow:0 0 20px var(--gold);pointer-events:none}
+#gl-toast.show{animation:pop 1.6s ease-out}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}
+ 80%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(1)}}
+#gl-confetti{position:fixed;inset:0;z-index:2999;pointer-events:none}
