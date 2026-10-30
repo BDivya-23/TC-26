@@ -411,7 +411,6 @@ function approveProposal() {
     
     const area = cityState.areas[cityState.selectedArea];
     
-    // BANKRUPTCY CHECK
     if (cityState.budget < currentProposal.cost) { 
         stopTimer();
         document.getElementById('advisor-response').innerHTML = `<span style="color:#ef4444; font-weight:bold;">❌ INSUFFICIENT FUNDS!</span>`;
@@ -708,7 +707,6 @@ window.onload = function() {
         }
     }
 
-    // ONLY render the city selection grid, do NOT show the modal yet.
     renderCitySelection();
 };
 
