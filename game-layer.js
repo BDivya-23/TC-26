@@ -136,7 +136,10 @@ function beginMission(){
   sfx.start();
   $('gl-start').style.display='none';
   
-  // NEW FLOW STEP: Show City Selection Modal
+  // Render the cities THEN show the modal
+  if (typeof window.renderCitySelection === 'function') {
+      window.renderCitySelection();
+  }
   document.getElementById('selection-modal').style.display = 'flex';
 }
 
