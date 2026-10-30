@@ -135,9 +135,9 @@ function beginMission(){
   started = true;
   sfx.start();
   $('gl-start').style.display='none';
-  $('hud').style.display='flex';
-  document.documentElement.requestFullscreen?.().catch(()=>{});
-  setTimeout(()=>map && map.invalidateSize(), 300);
+  
+  // NEW FLOW STEP: Show City Selection Modal
+  document.getElementById('selection-modal').style.display = 'flex';
 }
 
 $('gl-play').onclick = () => {
@@ -148,7 +148,10 @@ $('gl-play').onclick = () => {
   window.TwinAvatar.open({
     sfx,
     onDone: beginMission,
-    onBack: () => { $('gl-start').style.display='flex'; }
+    onBack: () => { 
+        // If they go back from avatar, show home screen again
+        $('gl-start').style.display='flex'; 
+    }
   });
 };
 
