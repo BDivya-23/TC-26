@@ -708,8 +708,8 @@ window.onload = function() {
         }
     }
 
+    // ONLY render the city selection grid, do NOT show the modal yet.
     renderCitySelection();
-    document.getElementById('selection-modal').style.display = 'flex';
 };
 
 function saveGame() { 
