@@ -64,6 +64,7 @@ document.body.insertAdjacentHTML('beforeend', `
 
 const $ = id => document.getElementById(id);
 $('hud').style.display='none';
+$('city-toast').style.display='none'; // Hide the toast on load
 
 // ---------- Typewriter Effect ----------
 const typeText = "DIGITAL CHENNAI · MAYOR SIMULATOR";
@@ -136,7 +137,9 @@ function beginMission(){
   sfx.start();
   $('gl-start').style.display='none';
   
-  // Render the cities THEN show the modal
+  // Reveal the toast container now that we are entering the map
+  $('city-toast').style.display='flex'; 
+  
   if (typeof window.renderCitySelection === 'function') {
       window.renderCitySelection();
   }
