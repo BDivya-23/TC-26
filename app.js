@@ -613,4 +613,145 @@ function renderCityInfrastructure() {
 
     infrastructureLayer.clearLayers(); 
 
-    if (cityState.areas['Vadapalani'] && cityState.areas['
+    if (cityState.areas['Vadapalani'] && cityState.areas['Vadapalani'].solved) {
+        const metroCoords = [ [13.0503, 80.2121], [13.0450, 80.2200], [13.0400, 80.2350], [13.0350, 80.2500] ];
+        L.polyline(metroCoords, { color: '#3b82f6', weight: 6, opacity: 0.9, dashArray: '10, 10', lineCap: 'round', className: 'metro-line-anim' }).addTo(infrastructureLayer).bindTooltip("🚇 New Metro Extension", { permanent: true, direction: "right", className: 'map-tooltip' });
+    }
+    if (cityState.areas['Velachery'] && cityState.areas['Velachery'].solved) {
+        const parkCoords = [ [12.9800, 80.2150], [12.9780, 80.2210], [12.9720, 80.2220], [12.9710, 80.2160], [12.9750, 80.2130] ];
+        L.polygon(parkCoords, { color: '#10b981', weight: 2, fillColor: '#10b981', fillOpacity: 0.4, className: 'park-fade-in' }).addTo(infrastructureLayer).bindTooltip("🌳 Flood Absorption Park", { permanent: true, direction: "center", className: 'map-tooltip' });
+    }
+    if (cityState.areas['Porur'] && cityState.areas['Porur'].solved) {
+        const ringRoadCoords = [ [13.0358, 80.1568], [13.0450, 80.1400], [13.0600, 80.1450], [13.0700, 80.1600], [13.0600, 80.1800], [13.0400, 80.1800], [13.0358, 80.1568] ];
+        L.polyline(ringRoadCoords, { color: '#f59e0b', weight: 8, opacity: 0.8, lineCap: 'round', lineJoin: 'round' }).addTo(infrastructureLayer).bindTooltip("🛣️ New Porur Bypass", { permanent: true, direction: "center", className: 'map-tooltip' });
+    }
+    if (cityState.areas['ECR'] && cityState.areas['ECR'].solved) {
+        const ecrCoords = [ [12.9850, 80.2600], [12.9700, 80.2650], [12.9500, 80.2700] ];
+        L.polyline(ecrCoords, { color: '#0ea5e9', weight: 5, opacity: 0.8, dashArray: '5, 10' }).addTo(infrastructureLayer).bindTooltip("🏖️ Coastal Walkway", { permanent: true, direction: "right", className: 'map-tooltip' });
+    }
+    if (cityState.areas['T. Nagar'] && cityState.areas['T. Nagar'].solved) {
+        const flyoverCoords = [ [13.0350, 80.2300], [13.0400, 80.2350], [13.0450, 80.2400] ];
+        L.polyline(flyoverCoords, { color: '#a855f7', weight: 7, opacity: 0.9 }).addTo(infrastructureLayer).bindTooltip("🌉 T.Nagar Flyover", { permanent: true, direction: "top", className: 'map-tooltip' });
+    }
+    if (cityState.areas['Anna Salai'] && cityState.areas['Anna Salai'].solved) {
+        const annaSalaiCoords = [ [13.0600, 80.2700], [13.0700, 80.2750], [13.0800, 80.2800] ];
+        L.polyline(annaSalaiCoords, { color: '#10b981', weight: 9, opacity: 0.8 }).addTo(infrastructureLayer).bindTooltip("🛣️ Anna Salai Corridor", { permanent: true, direction: "top", className: 'map-tooltip' });
+    }
+    if (cityState.areas['Ramapuram'] && cityState.areas['Ramapuram'].solved) {
+        const subwayCoords = [ [13.0300, 80.1800], [13.0330, 80.1830] ];
+        L.polyline(subwayCoords, { color: '#64748b', weight: 8, opacity: 0.9 }).addTo(infrastructureLayer).bindTooltip("🚇 Ramapuram Subway", { permanent: true, direction: "bottom", className: 'map-tooltip' });
+    }
+    if (cityState.areas['Koyambedu'] && cityState.areas['Koyambedu'].solved) {
+        const koyambeduCoords = [ [13.0700, 80.1950], [13.0750, 80.2000] ];
+        L.polyline(koyambeduCoords, { color: '#a855f7', weight: 7, opacity: 0.9 }).addTo(infrastructureLayer).bindTooltip("🌉 Koyambedu Flyover", { permanent: true, direction: "top", className: 'map-tooltip' });
+    }
+    if (cityState.areas['Tidel Park'] && cityState.areas['Tidel Park'].solved) {
+        const tidelCoords = [ [12.9900, 80.2450], [12.9880, 80.2480], [12.9920, 80.2500] ];
+        L.polygon(tidelCoords, { color: '#06b6d4', weight: 2, fillColor: '#06b6d4', fillOpacity: 0.5 }).addTo(infrastructureLayer).bindTooltip("💻 IT Park Corridor", { permanent: true, direction: "center", className: 'map-tooltip' });
+    }
+    if (cityState.areas['Tambaram'] && cityState.areas['Tambaram'].solved) {
+        const tambaramCoords = [ [12.9200, 80.1200], [12.9250, 80.1250], [12.9300, 80.1300] ];
+        L.polyline(tambaramCoords, { color: '#3b82f6', weight: 6, opacity: 0.9, dashArray: '10, 10' }).addTo(infrastructureLayer).bindTooltip("🚆 Tambaram Rail Upgrade", { permanent: true, direction: "right", className: 'map-tooltip' });
+    }
+    if (cityState.areas['Adyar'] && cityState.areas['Adyar'].solved) {
+        const adyarCoords = [ [13.0067, 80.2570], [13.0100, 80.2600] ];
+        L.polyline(adyarCoords, { color: '#3b82f6', weight: 6, opacity: 0.9 }).addTo(infrastructureLayer).bindTooltip("🌉 Adyar Bridge", { permanent: true, direction: "right", className: 'map-tooltip' });
+    }
+    if (cityState.areas['Guindy'] && cityState.areas['Guindy'].solved) {
+        const guindyCoords = [ [13.0067, 80.2206], [13.0100, 80.2250] ];
+        L.polyline(guindyCoords, { color: '#a855f7', weight: 7, opacity: 0.9 }).addTo(infrastructureLayer).bindTooltip("🌉 Guindy Flyover", { permanent: true, direction: "top", className: 'map-tooltip' });
+    }
+    if (cityState.areas['Chromepet'] && cityState.areas['Chromepet'].solved) {
+        const chromeCoords = [ [12.9516, 80.1462], [12.9550, 80.1500] ];
+        L.polyline(chromeCoords, { color: '#f59e0b', weight: 8, opacity: 0.8 }).addTo(infrastructureLayer).bindTooltip("🚉 Chromepet Rail Overpass", { permanent: true, direction: "bottom", className: 'map-tooltip' });
+    }
+    if (cityState.areas['Nungambakkam'] && cityState.areas['Nungambakkam'].solved) {
+        const nungamCoords = [ [13.0569, 80.2425], [13.0600, 80.2450] ];
+        L.polygon(nungamCoords, { color: '#10b981', weight: 2, fillColor: '#10b981', fillOpacity: 0.4 }).addTo(infrastructureLayer).bindTooltip("🏙️ Nungambakkam Hub", { permanent: true, direction: "center", className: 'map-tooltip' });
+    }
+    if (cityState.areas['Besant Nagar'] && cityState.areas['Besant Nagar'].solved) {
+        const besantCoords = [ [13.0003, 80.2668], [13.0020, 80.2700] ];
+        L.polygon(besantCoords, { color: '#0ea5e9', weight: 2, fillColor: '#0ea5e9', fillOpacity: 0.5 }).addTo(infrastructureLayer).bindTooltip("🏖️ Besant Nagar Beach Park", { permanent: true, direction: "center", className: 'map-tooltip' });
+    }
+}
+
+// =============================================================
+// INITIALIZATION
+// =============================================================
+window.onload = function() {
+    const savedState = localStorage.getItem('twinCityState');
+    
+    if (savedState) {
+        const parsed = JSON.parse(savedState);
+        if (parsed.version === GAME_VERSION && parsed.areas && Object.keys(parsed.areas).length === 10) {
+            Object.assign(cityState, parsed);
+            
+            initMap(); 
+            initInfrastructureLayer();
+            renderCityInfrastructure();
+            updateDashboard();
+            
+            const budgetSpan = document.getElementById('budget');
+            if(budgetSpan) budgetSpan.innerText = `₹${cityState.budget} Cr`;
+            const happSpan = document.getElementById('happiness');
+            if(happSpan) happSpan.innerText = `${cityState.happiness}%`;
+            document.getElementById('score-display').innerText = cityState.score;
+            
+            const firstUnsolved = Object.keys(cityState.areas).find(k => !cityState.areas[k].solved);
+            if(firstUnsolved) handleAreaCardClick(firstUnsolved);
+            else endGame(false);
+            
+            setTimeout(() => { map.invalidateSize(); renderAreaCards(); }, 250);
+            return; 
+        } else {
+            localStorage.removeItem('twinCityState');
+        }
+    }
+
+    renderCitySelection();
+    document.getElementById('selection-modal').style.display = 'flex';
+};
+
+function saveGame() { 
+    cityState.version = GAME_VERSION; 
+    localStorage.setItem('twinCityState', JSON.stringify(cityState)); 
+}
+
+function resetGame() { 
+    localStorage.removeItem('twinCityState'); 
+    location.reload(); 
+}
+
+function showFloatingText(text, color) { 
+    const el = document.createElement('div'); 
+    el.className = 'floating-text'; 
+    el.textContent = text; 
+    el.style.color = color; 
+    el.style.left = '60%'; 
+    el.style.top = '40%'; 
+    document.body.appendChild(el); 
+    setTimeout(() => el.remove(), 1500); 
+}
+
+function simulateWhatIf(type) {
+    if (cityState.isGameOver) return;
+    if (!cityState.selectedArea) { alert("Please select an area on the map first!"); return; }
+    const area = cityState.areas[cityState.selectedArea]; const resultBox = document.getElementById('what-if-result'); resultBox.style.display = 'block';
+    if (type === 'metro') { resultBox.innerHTML = `<strong>🚇 Metro Extension</strong><br>Cost: ₹45 Cr<br>Traffic Impact: -25 points<br>Flood Impact: 0 points<br><em>Budget after: ₹${cityState.budget - 45} Cr</em>`; document.getElementById('proposal-input').value = "metro extension"; } 
+    else if (type === 'drainage') { const floodReduction = area.flood > 50 ? "High" : "Medium"; resultBox.innerHTML = `<strong>🌊 Drainage System</strong><br>Cost: ₹25 Cr<br>Flood Impact: -30 points (${floodReduction})<br>Traffic Impact: 0 points<br><em>Budget after: ₹${cityState.budget - 25} Cr</em>`; document.getElementById('proposal-input').value = "drainage system"; }
+    evaluateProposal(); 
+}
+
+function initMap() {
+    map = L.map('map', { dragging: true, zoomControl: true }).setView([13.0500, 80.2100], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+    
+    locations.forEach(loc => {
+        if (cityState.areas[loc.name]) {
+            const customIcon = L.divIcon({ className: 'custom-div-icon', html: `<div class='map-marker'>📍 ${loc.name}</div>`, iconSize: [100, 30], iconAnchor: [50, 15] });
+            const marker = L.marker(loc.coords, { icon: customIcon }).addTo(map);
+            mapMarkers[loc.name] = marker;
+            marker.on('click', function() { handleAreaCardClick(loc.name); });
+        }
+    });
+}
