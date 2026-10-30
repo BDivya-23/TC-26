@@ -1,6 +1,7 @@
 /* TwinCity game layer: add AFTER style.css */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap');
 :root{--neon:#22d3ee;--neon2:#a855f7;--gold:#fbbf24}
+
 #top-bar{font-family:'Orbitron',sans-serif;border-bottom:2px solid var(--neon)!important;box-shadow:0 0 18px rgba(34,211,238,.45)}
 #dashboard{font-family:'Orbitron','Segoe UI',sans-serif;border-left:2px solid var(--neon2)!important;box-shadow:-6px 0 30px rgba(168,85,247,.35)}
 #dashboard h1,#dashboard h2{letter-spacing:2px;text-shadow:0 0 8px rgba(34,211,238,.6)}
@@ -12,6 +13,7 @@
 @keyframes pulse{0%,100%{box-shadow:0 0 4px #ef4444}50%{box-shadow:0 0 18px #ef4444}}
 #map::after{content:"";position:absolute;inset:0;z-index:500;pointer-events:none;
 background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.6) 100%)}
+
 /* =========================================
 START SCREEN BASE
 ========================================= */
@@ -24,6 +26,7 @@ align-items: center; justify-content: center;
 text-align: center; color: #fff;
 font-family: 'Orbitron', sans-serif;
 }
+
 /* =========================================
 BACKGROUND LAYER
 ========================================= */
@@ -52,8 +55,9 @@ animation: pulseNode 3s infinite alternate;
 0% { transform: scale(0.5); opacity: 0.2; }
 100% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 20px var(--neon); background: var(--neon); }
 }
+
 /* =========================================
-3D DIGITAL TWIN CITY (SCALED & CENTERED)
+3D DIGITAL TWIN CITY
 ========================================= */
 .gl-3d-scene {
 position: absolute;
@@ -165,12 +169,13 @@ z-index: 3;
 0% { transform: translate(-50%, -50%) translateZ(40px) rotate(0deg) translateX(100px) rotate(0deg); }
 100% { transform: translate(-50%, -50%) translateZ(40px) rotate(360deg) translateX(100px) rotate(-360deg); }
 }
+
 /* =========================================
 FOREGROUND LAYER (Text & Buttons)
 ========================================= */
 .gl-content {
 position: relative;
-z-index: 9999; /* Forces content above the 3D city */
+z-index: 9999;
 display: flex; flex-direction: column; align-items: center;
 padding: 20px;
 }
@@ -183,7 +188,6 @@ color: var(--neon2); font-size: 14px; letter-spacing: 4px;
 min-height: 20px; margin-top: 10px;
 text-shadow: 0 0 10px var(--neon2), 0 4px 20px rgba(5,9,20,1);
 }
-/* Glassmorphism Briefing Panel */
 .gl-briefing {
 margin: 30px 0;
 padding: 20px 30px;
@@ -198,7 +202,6 @@ color: #cbd5e1; font-size: 15px; line-height: 1.6;
 text-shadow: none;
 }
 .gl-briefing strong { color: var(--gold); font-family: 'Orbitron', sans-serif; }
-/* Controls & Toggles */
 .gl-controls { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 10px; }
 .gl-btn {
 font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: 3px;
@@ -221,9 +224,9 @@ font-family: 'Orbitron', sans-serif; font-size: 12px;
 cursor: pointer; transition: all 0.2s;
 }
 .gl-toggle:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: var(--neon); }
-/* Game Over Screen */
 #gl-over h1 { color: #ef4444; text-shadow: 0 0 25px #ef4444; }
 #gl-over .gl-btn { background: #ef4444; color: #fff; animation: none; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+
 /* HUD */
 #hud{position:fixed;top:110px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;gap:10px;
 font-family:'Orbitron',sans-serif;color:#fff}
@@ -231,7 +234,6 @@ font-family:'Orbitron',sans-serif;color:#fff}
 text-align:center;box-shadow:0 0 12px rgba(34,211,238,.4);min-width:90px}
 #hud small{display:block;font-size:9px;letter-spacing:2px;color:#7dd3fc}
 #hud b{font-size:18px;color:var(--gold)}
-/* Toast + confetti */
 #gl-toast{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%) scale(.5);z-index:3000;opacity:0;
 font-family:'Orbitron',sans-serif;font-size:44px;font-weight:800;color:var(--gold);text-shadow:0 0 20px var(--gold);pointer-events:none}
 #gl-toast.show{animation:pop 1.6s ease-out}
